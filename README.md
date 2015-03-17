@@ -7,7 +7,7 @@ working Apache/Nginx. The stack should be optimized to run a Drupal site.
 
 # Production
 ```sh
-  ~$ drush make https://raw.github.com/loopdk/profile/master/drupal.make loop
+  ~$ drush make https://raw.github.com/os2loop/profile/master/drupal.make loop
 ```
 
 # Development
@@ -15,7 +15,7 @@ If you want a developer version with _working copies_ of the Git repositories,
 run this command instead.
 
 ```sh
-  ~$ drush make --working-copy https://raw.github.com/loopdk/profile/development/drupal.make loop
+  ~$ drush make --working-copy https://raw.github.com/os2loop/profile/development/drupal.make loop
 ```
 
 ## Apache Solr
