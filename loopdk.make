@@ -208,7 +208,6 @@ projects[shurly][download][url] = "http://git.drupal.org/project/shurly.git"
 projects[shurly][download][revision] = "bf412bd"
 projects[shurly][patch][] = "https://drupal.org/files/issues/shurly-host-check.patch"
 
-projects[simplesamlphp_auth][type] = "module"
 projects[simplesamlphp_auth][subdir] = "contrib"
 projects[simplesamlphp_auth][version] = "2.0-alpha2"
 
