@@ -159,6 +159,9 @@ projects[panels][version] = "3.4"
 projects[pathauto][subdir] = "contrib"
 projects[pathauto][version] = "1.2"
 
+projects[path_breadcrumbs][subdir] = "contrib"
+projects[path_breadcrumbs][version] = "3.2"
+
 projects[pcp][subdir] = "contrib"
 projects[pcp][version] = "1.6"
 
