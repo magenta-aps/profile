@@ -283,6 +283,11 @@ projects[loop_flag][download][type] = "git"
 projects[loop_flag][download][url] = "git@github.com:os2loop/loop_flag.git"
 projects[loop_flag][branch] = "development"
 
+projects[loop_friend_notification][type] = "module"
+projects[loop_friend_notification][download][type] = "git"
+projects[loop_friend_notification][download][url] = "git@github.com:os2loop/loop_friend_notification.git"
+projects[loop_friend_notification][branch] = "development";
+
 projects[loop_frontend][type] = "module"
 projects[loop_frontend][download][type] = "git"
 projects[loop_frontend][download][url] = "git@github.com:os2loop/loop_frontend.git"
