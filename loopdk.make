@@ -211,6 +211,9 @@ projects[shurly][download][url] = "http://git.drupal.org/project/shurly.git"
 projects[shurly][download][revision] = "bf412bd"
 projects[shurly][patch][] = "https://drupal.org/files/issues/shurly-host-check.patch"
 
+projects[simplesamlphp_auth][subdir] = "contrib"
+projects[simplesamlphp_auth][version] = "2.0-alpha2"
+
 projects[special_menu_items][subdir] = "contrib"
 projects[special_menu_items][version] = "2.0"
 
@@ -335,6 +338,11 @@ projects[loop_search][type] = "module"
 projects[loop_search][download][type] = "git"
 projects[loop_search][download][url] = "git@github.com:os2loop/loop_search.git"
 projects[loop_search][branch] = "development"
+
+projects[loop_simplesamlphp][type] = "module"
+projects[loop_simplesamlphp][download][type] = "git"
+projects[loop_simplesamlphp][download][url] = "git@github.com:os2loop/loop_simplesamlphp.git"
+projects[loop_simplesamlphp][branch] = "development";
 
 projects[loop_taxonomy][type] = "module"
 projects[loop_taxonomy][download][type] = "git"
