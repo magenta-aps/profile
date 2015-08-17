@@ -50750,3 +50750,19 @@ msgstr "Vis alle spørgsmål"
 #: /editor/dashboard/questions
 msgid "All questions"
 msgstr "Alle spørgsmål"
+
+#: /admin/modules/list/confirm
+msgid "Remove subscription"
+msgstr "Fjern abonnering"
+
+#: /user/1/notifications
+msgid "You selected the following <strong>!count</strong>:"
+msgstr "Du har valgt følgende:"
+
+#: /subject/forebyggende
+msgid "Follow subject"
+msgstr "Følg emne"
+
+#: /subject/forebyggende
+msgid "Have an email sent when there are new questions."
+msgstr "Få tilsendt en email når der er nye spørgsmål."
