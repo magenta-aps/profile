@@ -20,6 +20,7 @@ dependencies[] = entityreference
 dependencies[] = diff
 dependencies[] = facetapi
 dependencies[] = features
+dependencies[] = features_override
 dependencies[] = fe_block
 dependencies[] = field_group
 dependencies[] = field_ui
