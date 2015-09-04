@@ -7,7 +7,7 @@ projects[abuse][subdir] = "contrib"
 projects[abuse][download][type] = "git"
 projects[abuse][download][url] = "http://git.drupal.org/project/abuse.git"
 projects[abuse][download][branch] = "7.x-1.x-dev"
-projects[abuse][patch][] = "https://www.drupal.org/files/issues/1484470-huge-patch-2.patch"
+; projects[abuse][patch][] = "https://www.drupal.org/files/issues/1484470-huge-patch-3.patch"
 
 projects[admin_views][subdir] = "contrib"
 projects[admin_views][version] = "1.2"
@@ -59,6 +59,9 @@ projects[features][version] = "2.0"
 
 projects[features_extra][subdir] = "contrib"
 projects[features_extra][version] = "1.0-beta1"
+
+projects[features_override][subdir] = "contrib"
+projects[features_override][version] = "2.0-rc2"
 
 projects[field_group][subdir] = "contrib"
 projects[field_group][version] = "1.3"
@@ -159,6 +162,9 @@ projects[panels][version] = "3.4"
 projects[pathauto][subdir] = "contrib"
 projects[pathauto][version] = "1.2"
 
+projects[path_breadcrumbs][subdir] = "contrib"
+projects[path_breadcrumbs][version] = "3.2"
+
 projects[pcp][subdir] = "contrib"
 projects[pcp][version] = "1.6"
 
@@ -207,6 +213,9 @@ projects[shurly][download][type] = "git"
 projects[shurly][download][url] = "http://git.drupal.org/project/shurly.git"
 projects[shurly][download][revision] = "bf412bd"
 projects[shurly][patch][] = "https://drupal.org/files/issues/shurly-host-check.patch"
+
+projects[simplesamlphp_auth][subdir] = "contrib"
+projects[simplesamlphp_auth][version] = "2.0-alpha2"
 
 projects[special_menu_items][subdir] = "contrib"
 projects[special_menu_items][version] = "2.0"
@@ -332,6 +341,11 @@ projects[loop_search][type] = "module"
 projects[loop_search][download][type] = "git"
 projects[loop_search][download][url] = "git@github.com:magenta-aps/loop_search.git"
 projects[loop_search][branch] = "development"
+
+projects[loop_simplesamlphp][type] = "module"
+projects[loop_simplesamlphp][download][type] = "git"
+projects[loop_simplesamlphp][download][url] = "git@github.com:os2loop/loop_simplesamlphp.git"
+projects[loop_simplesamlphp][branch] = "development";
 
 projects[loop_taxonomy][type] = "module"
 projects[loop_taxonomy][download][type] = "git"
