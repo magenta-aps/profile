@@ -56,6 +56,7 @@ dependencies[] = shorten
 dependencies[] = shortener
 dependencies[] = shurly
 dependencies[] = strongarm
+dependencies[] = style_settings
 dependencies[] = taxonomy
 dependencies[] = taxonomy_manager
 dependencies[] = token
