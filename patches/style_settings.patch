@@ -1,6 +1,6 @@
-diff --git a/style_settings.module b/style_settings.module
---- a/style_settings.module
-+++ b/style_settings.module
+diff --git a/style_settings/style_settings.module b/style_settings/style_settings.module
+--- a/style_settings/style_settings.module
++++ b/style_settings/style_settings.module
 @@ -97,7 +97,7 @@
    // Get the active theme and all available persistent variables ($conf).
    global $theme_key, $conf;
