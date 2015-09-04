@@ -1,0 +1,44 @@
+diff --git a/style_settings.module b/style_settings.module
+--- a/style_settings.module
++++ b/style_settings.module
+@@ -97,7 +97,7 @@
+   // Get the active theme and all available persistent variables ($conf).
+   global $theme_key, $conf;
+   // Caching hashed 'new paths' as it is expensive to calculate these values.
+-  $cid = 'style_settings_' . $path;
++  $cid = 'style_settings_' . $path . '_' . variable_get('css_js_query_string', '0');
+   $new_path_cached = cache_get($cid);
+   $new_path = isset($new_path_cached->data) ? $new_path_cached->data : FALSE;
+   // We need a new unique key (and rewrite) if the original CSS file changed.
+@@ -128,7 +128,7 @@
+     $new_data = preg_replace_callback('/url\([\'"]?(?![a-z]+:|\/+)([^\'")]+)[\'"]?\)/i', '_drupal_build_css_path', $old_data);
+ 
+     // Replace all custom css.
+-    $new_data = preg_replace_callback('/\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\/(.*)\/\*\s*.*\s*\*\//iU', 'style_settings_replace', $new_data, $limit = -1, $count);
++    $new_data = preg_replace_callback('/\s*([a-z\-\#0-9]*)\s*;\s*\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\//mUsi', 'style_settings_replace', $new_data, $limit = -1, $count);
+ 
+     // Only rewrite a CSS file if any replacements were made.
+     if ($count > 0) {
+@@ -168,9 +168,9 @@
+ function style_settings_replace($matches) {
+   global $theme_key;
+ 
+-  $type      = $matches[1];
+-  $name      = $matches[2];
+-  $original  = $matches[3];
++  $type      = $matches[2];
++  $name      = $matches[3];
++  $original  = $matches[1];
+ 
+   // Cache settings for next calls.
+   if ($type == 'setting') {
+@@ -206,7 +206,7 @@
+     $replacement = 'url(\'' . $replacement . '\')';
+   }
+ 
+-  return $replacement;
++  return "$replacement;";
+ }
+ 
+ /**
+

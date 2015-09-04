@@ -231,6 +231,7 @@ projects[style_settings][subdir] = "contrib"
 projects[style_settings][download][type] = "git"
 projects[style_settings][download][url] = "https://github.com/backdrop-contrib/style_settings.git"
 projects[style_settings][download][branch] = "1.x-1.x"
+projects[style_settings][patch][] = "patches/style_settings.patch"
 
 projects[taxonomy_manager][subdir] = "contrib"
 projects[taxonomy_manager][version] = "1.0"
