@@ -278,6 +278,11 @@ projects[loop_admin][branch] = "development"
 
 projects[loop_content][type] = "module"
 projects[loop_content][download][type] = "git"
+projects[loop_content][download][url] = "git@github.com:os2loop/loop_configure_theme.git"
+projects[loop_content][branch] = "development"
+
+projects[loop_content][type] = "module"
+projects[loop_content][download][type] = "git"
 projects[loop_content][download][url] = "git@github.com:os2loop/loop_content.git"
 projects[loop_content][branch] = "development"
 
