@@ -1,7 +1,7 @@
-diff --git a/style_settings.module b/style_settings.module
+diff --git style_settings.module style_settings.module
 index 4b19026..fd50eef 100644
---- a/style_settings.module
-+++ b/style_settings.module
+--- style_settings.module
++++ style_settings.module
 @@ -99,7 +99,7 @@ function style_settings_rewrite($path, $reset = FALSE) {
    // Get the active theme and all available persistent variables ($conf).
    global $theme_key, $conf;
