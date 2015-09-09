@@ -7,7 +7,7 @@ projects[abuse][subdir] = "contrib"
 projects[abuse][download][type] = "git"
 projects[abuse][download][url] = "http://git.drupal.org/project/abuse.git"
 projects[abuse][download][branch] = "7.x-1.x-dev"
-; projects[abuse][patch][] = "https://www.drupal.org/files/issues/1484470-huge-patch-3.patch"
+projects[abuse][patch][] = "https://www.drupal.org/files/issues/1484470-huge-patch-2.patch"
 
 projects[admin_views][subdir] = "contrib"
 projects[admin_views][version] = "1.2"
@@ -59,9 +59,6 @@ projects[features][version] = "2.0"
 
 projects[features_extra][subdir] = "contrib"
 projects[features_extra][version] = "1.0-beta1"
-
-projects[features_override][subdir] = "contrib"
-projects[features_override][version] = "2.0-rc2"
 
 projects[field_group][subdir] = "contrib"
 projects[field_group][version] = "1.3"
@@ -226,6 +223,13 @@ projects[statistics_counter][version] = "1.2"
 projects[strongarm][subdir] = "contrib"
 projects[strongarm][version] = "2.0"
 
+projects[style_settings][type] = "module"
+projects[style_settings][subdir] = "contrib"
+projects[style_settings][download][type] = "git"
+projects[style_settings][download][url] = "http://git.drupal.org/project/style_settings.git"
+projects[style_settings][download][branch] = "7.x-1.x"
+projects[style_settings][patch][] = "patches/style_settings.patch"
+
 projects[taxonomy_manager][subdir] = "contrib"
 projects[taxonomy_manager][version] = "1.0"
 
@@ -263,73 +267,78 @@ projects[wysiwyg][version] = "2.2"
 ; LOOP modules
 projects[loop_external_data][type] = "module"
 projects[loop_external_data][download][type] = "git"
-projects[loop_external_data][download][url] = "git@github.com:magenta-aps/loop_external_data.git"
+projects[loop_external_data][download][url] = "git@github.com:os2loop/loop_external_data.git"
 projects[loop_external_data][branch] = "development"
 
 ; LOOP features
 projects[loop_admin][type] = "module"
 projects[loop_admin][download][type] = "git"
-projects[loop_admin][download][url] = "git@github.com:magenta-aps/loop_admin.git"
+projects[loop_admin][download][url] = "git@github.com:os2loop/loop_admin.git"
 projects[loop_admin][branch] = "development"
 
 projects[loop_content][type] = "module"
 projects[loop_content][download][type] = "git"
-projects[loop_content][download][url] = "git@github.com:magenta-aps/loop_content.git"
+projects[loop_content][download][url] = "git@github.com:os2loop/loop_configure_theme.git"
+projects[loop_content][branch] = "development"
+
+projects[loop_content][type] = "module"
+projects[loop_content][download][type] = "git"
+projects[loop_content][download][url] = "git@github.com:os2loop/loop_content.git"
 projects[loop_content][branch] = "development"
 
 projects[loop_external_data][type] = "module"
 projects[loop_external_data][download][type] = "git"
-projects[loop_external_data][download][url] = "git@github.com:magenta-aps/loop_external_data.git"
+projects[loop_external_data][download][url] = "git@github.com:os2loop/loop_external_data.git"
 projects[loop_external_data][branch] = "development"
 
 projects[loop_field_bases][type] = "module"
 projects[loop_field_bases][download][type] = "git"
-projects[loop_field_bases][download][url] = "git@github.com:magenta-aps/loop_field_bases.git"
+projects[loop_field_bases][download][url] = "git@github.com:os2loop/loop_field_bases.git"
 projects[loop_field_bases][branch] = "development"
 
 projects[loop_flag][type] = "module"
 projects[loop_flag][download][type] = "git"
-projects[loop_flag][download][url] = "git@github.com:magenta-aps/loop_flag.git"
+projects[loop_flag][download][url] = "git@github.com:os2loop/loop_flag.git"
 projects[loop_flag][branch] = "development"
 
 projects[loop_friend_notification][type] = "module"
 projects[loop_friend_notification][download][type] = "git"
-projects[loop_friend_notification][download][url] = "git@github.com:magenta-aps/loop_friend_notification.git"
+projects[loop_friend_notification][download][url] = "git@github.com:os2loop/loop_friend_notification.git"
 projects[loop_friend_notification][branch] = "development"
 
 projects[loop_frontend][type] = "module"
 projects[loop_frontend][download][type] = "git"
-projects[loop_frontend][download][url] = "git@github.com:magenta-aps/loop_frontend.git"
+projects[loop_frontend][download][url] = "git@github.com:os2loop/loop_frontend.git"
 projects[loop_frontend][branch] = "development"
 
 projects[loop_frontpage][type] = "module"
 projects[loop_frontpage][download][type] = "git"
-projects[loop_frontpage][download][url] = "git@github.com:magenta-aps/loop_frontpage.git"
+projects[loop_frontpage][download][url] = "git@github.com:os2loop/loop_frontpage.git"
 projects[loop_frontpage][branch] = "development"
 
 projects[loop_navigation][type] = "module"
 projects[loop_navigation][download][type] = "git"
-projects[loop_navigation][download][url] = "git@github.com:magenta-aps/loop_navigation.git"
+projects[loop_navigation][download][url] = "git@github.com:os2loop/loop_navigation.git"
 projects[loop_navigation][branch] = "development"
 
 projects[loop_node_statistics][type] = "module"
 projects[loop_node_statistics][download][type] = "git"
-projects[loop_node_statistics][download][url] = "git@github.com:magenta-aps/loop_node_statistics.git"
+projects[loop_node_statistics][download][url] = "git@github.com:os2loop/loop_node_statistics.git"
 projects[loop_node_statistics][branch] = "development"
 
 projects[loop_notification][type] = "module"
 projects[loop_notification][download][type] = "git"
-projects[loop_notification][download][url] = "git@github.com:magenta-aps/loop_notification.git"
+projects[loop_notification][download][url] = "git@github.com:os2loop/loop_notification.git"
 projects[loop_notification][branch] = "development"
 
 projects[loop_permissions][type] = "module"
 projects[loop_permissions][download][type] = "git"
-projects[loop_permissions][download][url] = "git@github.com:magenta-aps/loop_permissions.git"
+projects[loop_permissions][download][url] = "git@github.com:os2loop/loop_permissions.git"
 projects[loop_permissions][branch] = "development"
 
 projects[loop_post][type] = "module"
 projects[loop_post][download][type] = "git"
-projects[loop_post][download][url] = "git@github.com:magenta-aps/loop_post.git"
+projects[loop_post][download][url] = "git@github.com:os2loop/loop_post.git"
 projects[loop_post][branch] = "development";
 
 projects[loop_post][type] = "module"
@@ -339,12 +348,12 @@ projects[loop_post][branch] = "development";
 
 projects[loop_saml][type] = "module"
 projects[loop_saml][download][type] = "git"
-projects[loop_saml][download][url] = "git@github.com:magenta-aps/loop_saml.git"
+projects[loop_saml][download][url] = "git@github.com:os2loop/loop_saml.git"
 projects[loop_saml][branch] = "development";
 
 projects[loop_search][type] = "module"
 projects[loop_search][download][type] = "git"
-projects[loop_search][download][url] = "git@github.com:magenta-aps/loop_search.git"
+projects[loop_search][download][url] = "git@github.com:os2loop/loop_search.git"
 projects[loop_search][branch] = "development"
 
 projects[loop_simplesamlphp][type] = "module"
@@ -354,63 +363,63 @@ projects[loop_simplesamlphp][branch] = "development";
 
 projects[loop_taxonomy][type] = "module"
 projects[loop_taxonomy][download][type] = "git"
-projects[loop_taxonomy][download][url] = "git@github.com:magenta-aps/loop_taxonomy.git"
+projects[loop_taxonomy][download][url] = "git@github.com:os2loop/loop_taxonomy.git"
 projects[loop_taxonomy][branch] = "development"
 
 projects[loop_user][type] = "module"
 projects[loop_user][download][type] = "git"
-projects[loop_user][download][url] = "git@github.com:magenta-aps/loop_user.git"
+projects[loop_user][download][url] = "git@github.com:os2loop/loop_user.git"
 projects[loop_user][branch] = "development"
 
 projects[loop_user_related_content_competence][type] = "module"
 projects[loop_user_related_content_competence][download][type] = "git"
-projects[loop_user_related_content_competence][download][url] = "git@github.com:magenta-aps/loop_user_related_content_competence.git"
+projects[loop_user_related_content_competence][download][url] = "git@github.com:os2loop/loop_user_related_content_competence.git"
 projects[loop_user_related_content_competence][branch] = "development"
 
 projects[loop_user_related_content_profession][type] = "module"
 projects[loop_user_related_content_profession][download][type] = "git"
-projects[loop_user_related_content_profession][download][url] = "git@github.com:magenta-aps/loop_user_related_content_profession.git"
+projects[loop_user_related_content_profession][download][url] = "git@github.com:os2loop/loop_user_related_content_profession.git"
 projects[loop_user_related_content_profession][branch] = "development"
 
 projects[loop_user_subscriptions][type] = "module"
 projects[loop_user_subscriptions][download][type] = "git"
-projects[loop_user_subscriptions][download][url] = "git@github.com:magenta-aps/loop_user_subscriptions.git"
+projects[loop_user_subscriptions][download][url] = "git@github.com:os2loop/loop_user_subscriptions.git"
 projects[loop_user_subscriptions][branch] = "development"
 
 projects[loop_user_messages][type] = "module"
 projects[loop_user_messages][download][type] = "git"
-projects[loop_user_messages][download][url] = "git@github.com:magenta-aps/loop_user_messages.git"
+projects[loop_user_messages][download][url] = "git@github.com:os2loop/loop_user_messages.git"
 projects[loop_user_messages][branch] = "development"
 
 projects[loop_user_page_views][type] = "module"
 projects[loop_user_page_views][download][type] = "git"
-projects[loop_user_page_views][download][url] = "git@github.com:magenta-aps/loop_user_page_views.git"
+projects[loop_user_page_views][download][url] = "git@github.com:os2loop/loop_user_page_views.git"
 projects[loop_user_page_views][branch] = "development"
 
 projects[loop_editor_pages][type] = "module"
 projects[loop_editor_pages][download][type] = "git"
-projects[loop_editor_pages][download][url] = "git@github.com:magenta-aps/loop_editor_pages.git"
+projects[loop_editor_pages][download][url] = "git@github.com:os2loop/loop_editor_pages.git"
 projects[loop_editor_pages][branch] = "development"
 
 projects[loop_external_sources_content][type] = "module"
 projects[loop_external_sources_content][download][type] = "git"
-projects[loop_external_sources_content][download][url] = "git@github.com:magenta-aps/loop_external_sources_content.git"
+projects[loop_external_sources_content][download][url] = "git@github.com:os2loop/loop_external_sources_content.git"
 projects[loop_external_sources_content][branch] = "development"
 
 projects[loop_taxonomy_views][type] = "module"
 projects[loop_taxonomy_views][download][type] = "git"
-projects[loop_taxonomy_views][download][url] = "git@github.com:magenta-aps/loop_taxonomy_views.git"
+projects[loop_taxonomy_views][download][url] = "git@github.com:os2loop/loop_taxonomy_views.git"
 projects[loop_taxonomy_views][branch] = "development"
 
 projects[loop_taxonomy_terms][type] = "module"
 projects[loop_taxonomy_terms][download][type] = "git"
-projects[loop_taxonomy_terms][download][url] = "git@github.com:magenta-aps/loop_taxonomy_terms.git"
+projects[loop_taxonomy_terms][download][url] = "git@github.com:os2loop/loop_taxonomy_terms.git"
 projects[loop_taxonomy_terms][branch] = "development"
 
 ; LOOP themes
 projects[loop][type] = "theme"
 projects[loop][download][type] = "git"
-projects[loop][download][url] = "git@github.com:magenta-aps/loop.git"
+projects[loop][download][url] = "git@github.com:os2loop/loop.git"
 projects[loop][download][branch] = "development"
 
 ; Libraries
