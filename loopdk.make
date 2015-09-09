@@ -60,6 +60,9 @@ projects[features][version] = "2.0"
 projects[features_extra][subdir] = "contrib"
 projects[features_extra][version] = "1.0-beta1"
 
+projects[features_override][subdir] = "contrib"
+projects[features_override][version] = "2.0-rc2"
+
 projects[field_group][subdir] = "contrib"
 projects[field_group][version] = "1.3"
 
@@ -344,6 +347,11 @@ projects[loop_post][branch] = "development";
 projects[loop_post][type] = "module"
 projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:os2loop/loop_post_wysiwyg.git"
+projects[loop_post][branch] = "development";
+
+projects[loop_post][type] = "module"
+projects[loop_post][download][type] = "git"
+projects[loop_post][download][url] = "git@github.com:os2loop/loop_profession_optional.git"
 projects[loop_post][branch] = "development";
 
 projects[loop_saml][type] = "module"
