@@ -50750,3 +50750,23 @@ msgstr "Vis alle spørgsmål"
 #: /editor/dashboard/questions
 msgid "All questions"
 msgstr "Alle spørgsmål"
+
+#: /admin/appearance/settings/loop
+msgid "Header background color"
+msgstr "Sidehovedets baggrundsfarve"
+
+#: /admin/appearance/settings/loop
+msgid "Choose a color for the header background"
+msgstr "Vælg en farve til sidehovedets baggrund"
+
+#: /admin/appearance/settings/loop
+msgid "Settings for the page header"
+msgstr "Indstillinger for sidehovedet"
+
+#: /admin/appearance/settings/loop
+msgid "Header logo height"
+msgstr "Sidehovedets logohøjde"
+
+#: /admin/appearance/settings/loop
+msgid "Choose a height for the header logo"
+msgstr "Vælg en højde til sidehovedets logo"
