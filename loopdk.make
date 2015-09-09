@@ -332,6 +332,11 @@ projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:magenta-aps/loop_post.git"
 projects[loop_post][branch] = "development";
 
+projects[loop_post][type] = "module"
+projects[loop_post][download][type] = "git"
+projects[loop_post][download][url] = "git@github.com:os2loop/loop_post_wysiwyg.git"
+projects[loop_post][branch] = "development";
+
 projects[loop_saml][type] = "module"
 projects[loop_saml][download][type] = "git"
 projects[loop_saml][download][url] = "git@github.com:magenta-aps/loop_saml.git"
