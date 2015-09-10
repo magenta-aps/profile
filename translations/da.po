@@ -11994,6 +11994,9 @@ msgstr "Overordnet menupunkt"
 msgid "Question"
 msgstr "Spørgsmål"
 
+msgid "Instruction"
+msgstr "Vejledning"
+
 msgid "Add child page"
 msgstr "Tilføj underside"
 
