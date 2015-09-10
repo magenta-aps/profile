@@ -304,6 +304,11 @@ projects[loop_frontpage][download][type] = "git"
 projects[loop_frontpage][download][url] = "git@github.com:os2loop/loop_frontpage.git"
 projects[loop_frontpage][branch] = "development"
 
+projects[loop_frontpage][type] = "module"
+projects[loop_frontpage][download][type] = "git"
+projects[loop_frontpage][download][url] = "git@github.com:os2loop/loop_instruction.git"
+projects[loop_frontpage][branch] = "development"
+
 projects[loop_navigation][type] = "module"
 projects[loop_navigation][download][type] = "git"
 projects[loop_navigation][download][url] = "git@github.com:os2loop/loop_navigation.git"
