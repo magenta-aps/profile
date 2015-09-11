@@ -1,0 +1,58 @@
+diff --git style_settings.module style_settings.module
+index 4b19026..fd50eef 100644
+--- style_settings.module
++++ style_settings.module
+@@ -130,7 +130,7 @@ function style_settings_rewrite($path, $reset = FALSE) {
+     $new_data = preg_replace_callback('/url\([\'"]?(?![a-z]+:|\/+)([^\'")]+)[\'"]?\)/i', '_drupal_build_css_path', $old_data);
+ 
+     // Replace all custom css.
+-    $new_data = preg_replace_callback('/\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\/(.*)\/\*\s*.*\s*\*\//iU', 'style_settings_replace', $new_data, $limit = -1, $count);
++    $new_data = preg_replace_callback('/:\s*([^;]*)\s*;\s*\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\//mUsi', 'style_settings_replace', $new_data, $limit = -1, $count);
+ 
+     // Only rewrite a CSS file if any replacements were made.
+     if ($count > 0) {
+@@ -170,9 +170,9 @@ function style_settings_rewrite($path, $reset = FALSE) {
+ function style_settings_replace($matches) {
+   global $theme_key;
+ 
+-  $type      = $matches[1];
+-  $name      = $matches[2];
+-  $original  = $matches[3];
++  $original  = $matches[1];
++  $type      = $matches[2];
++  $name      = $matches[3];
+ 
+   // Cache settings for next calls.
+   if ($type == 'setting') {
+@@ -184,7 +183,7 @@ function style_settings_replace($matches) {
+     $replacement = variable_get($name, NULL);
+ 
+     if (!$replacement || !(is_string($replacement) || is_numeric($replacement))) {
+-      return $original;
++      return ": $original;";
+     }
+   }
+   // Theme setting.
+@@ -192,7 +191,7 @@ function style_settings_replace($matches) {
+     $replacement = $setting;
+ 
+     if (!$replacement) {
+-      return $original;
++      return ": $original;";
+     }
+   }
+ 
+@@ -208,7 +207,12 @@ function style_settings_replace($matches) {
+     $replacement = 'url(\'' . $replacement . '\')';
+   }
+ 
+-  return $replacement;
++  $m = array();
++  if (preg_match('/([a-z]+\((?:[a-z]+=)?)(?:.*)(\))/i', $original, $m) && !preg_match('/([a-z]+\((?:[a-z]+=)?)(?:.*)(\))/i', $replacement)) {
++    $replacement = $m[1] . $replacement . $m[2];
++  }
++
++  return ": $replacement;";
+ }
+ 
+ /**
