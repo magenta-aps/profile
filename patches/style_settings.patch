@@ -2,21 +2,12 @@ diff --git style_settings.module style_settings.module
 index 4b19026..fd50eef 100644
 --- style_settings.module
 +++ style_settings.module
-@@ -99,7 +99,7 @@ function style_settings_rewrite($path, $reset = FALSE) {
-   // Get the active theme and all available persistent variables ($conf).
-   global $theme_key, $conf;
-   // Caching hashed 'new paths' as it is expensive to calculate these values.
--  $cid = 'style_settings_' . $path;
-+  $cid = 'style_settings_' . $path . '_' . variable_get('css_js_query_string', '0');
-   $new_path_cached = cache_get($cid);
-   $new_path = isset($new_path_cached->data) ? $new_path_cached->data : FALSE;
-   // We need a new unique key (and rewrite) if the original CSS file changed.
 @@ -130,7 +130,7 @@ function style_settings_rewrite($path, $reset = FALSE) {
      $new_data = preg_replace_callback('/url\([\'"]?(?![a-z]+:|\/+)([^\'")]+)[\'"]?\)/i', '_drupal_build_css_path', $old_data);
  
      // Replace all custom css.
 -    $new_data = preg_replace_callback('/\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\/(.*)\/\*\s*.*\s*\*\//iU', 'style_settings_replace', $new_data, $limit = -1, $count);
-+    $new_data = preg_replace_callback('/\s*([a-z\-\#0-9]*)\s*;\s*\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\//mUsi', 'style_settings_replace', $new_data, $limit = -1, $count);
++    $new_data = preg_replace_callback('/:\s*([^;]*)\s*;\s*\/\*\s*(setting|variable)\s*:\s*([a-z0-9_]+)\s*\*\//mUsi', 'style_settings_replace', $new_data, $limit = -1, $count);
  
      // Only rewrite a CSS file if any replacements were made.
      if ($count > 0) {
@@ -27,18 +18,41 @@ index 4b19026..fd50eef 100644
 -  $type      = $matches[1];
 -  $name      = $matches[2];
 -  $original  = $matches[3];
++  $original  = $matches[1];
 +  $type      = $matches[2];
 +  $name      = $matches[3];
-+  $original  = $matches[1];
  
    // Cache settings for next calls.
    if ($type == 'setting') {
-@@ -208,7 +208,7 @@ function style_settings_replace($matches) {
+@@ -184,7 +183,7 @@ function style_settings_replace($matches) {
+     $replacement = variable_get($name, NULL);
+ 
+     if (!$replacement || !(is_string($replacement) || is_numeric($replacement))) {
+-      return $original;
++      return ": $original;";
+     }
+   }
+   // Theme setting.
+@@ -192,7 +191,7 @@ function style_settings_replace($matches) {
+     $replacement = $setting;
+ 
+     if (!$replacement) {
+-      return $original;
++      return ": $original;";
+     }
+   }
+ 
+@@ -208,7 +207,12 @@ function style_settings_replace($matches) {
      $replacement = 'url(\'' . $replacement . '\')';
    }
  
 -  return $replacement;
-+  return "$replacement;";
++  $m = array();
++  if (preg_match('/([a-z]+\((?:[a-z]+=)?)(?:.*)(\))/i', $original, $m) && !preg_match('/([a-z]+\((?:[a-z]+=)?)(?:.*)(\))/i', $replacement)) {
++    $replacement = $m[1] . $replacement . $m[2];
++  }
++
++  return ": $replacement;";
  }
  
  /**
