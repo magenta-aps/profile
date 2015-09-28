@@ -347,7 +347,7 @@ projects[loop_post][download][branch] = "test"
 projects[loop_post_wysiwyg][type] = "module"
 projects[loop_post_wysiwyg][download][type] = "git"
 projects[loop_post_wysiwyg][download][url] = "git@github.com:magenta-aps/loop_post_wysiwyg.git"
-projects[loop_post_wysiwyg][download][branch] = "test"
+projects[loop_post_wysiwyg][download][branch] = "development"
 
 projects[loop_profession_optional][type] = "module"
 projects[loop_profession_optional][download][type] = "git"
