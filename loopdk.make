@@ -223,6 +223,13 @@ projects[statistics_counter][version] = "1.2"
 projects[strongarm][subdir] = "contrib"
 projects[strongarm][version] = "2.0"
 
+projects[style_settings][type] = "module"
+projects[style_settings][subdir] = "contrib"
+projects[style_settings][download][type] = "git"
+projects[style_settings][download][url] = "http://git.drupal.org/project/style_settings.git"
+projects[style_settings][download][branch] = "7.x-1.x"
+projects[style_settings][patch][] = "patches/style_settings.patch"
+
 projects[taxonomy_manager][subdir] = "contrib"
 projects[taxonomy_manager][version] = "1.0"
 
@@ -269,6 +276,11 @@ projects[loop_admin][download][type] = "git"
 projects[loop_admin][download][url] = "git@github.com:os2loop/loop_admin.git"
 projects[loop_admin][branch] = "development"
 
+projects[loop_configure_theme][type] = "module"
+projects[loop_configure_theme][download][type] = "git"
+projects[loop_configure_theme][download][url] = "git@github.com:os2loop/loop_configure_theme.git"
+projects[loop_configure_theme][download][branch] = "development"
+
 projects[loop_content][type] = "module"
 projects[loop_content][download][type] = "git"
 projects[loop_content][download][url] = "git@github.com:os2loop/loop_content.git"
@@ -292,7 +304,7 @@ projects[loop_flag][branch] = "development"
 projects[loop_friend_notification][type] = "module"
 projects[loop_friend_notification][download][type] = "git"
 projects[loop_friend_notification][download][url] = "git@github.com:os2loop/loop_friend_notification.git"
-projects[loop_friend_notification][branch] = "development";
+projects[loop_friend_notification][branch] = "development"
 
 projects[loop_frontend][type] = "module"
 projects[loop_frontend][download][type] = "git"
