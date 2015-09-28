@@ -15,4 +15,4 @@ projects[drupal][patch][] = "https://drupal.org/files/issues/translate_role_name
 projects[loopdk][type] = "profile"
 projects[loopdk][download][type] = "git"
 projects[loopdk][download][url] = "git@github.com:magenta-aps/profile.git"
-projects[loopdk][branch] = "test"
+projects[loopdk][download][branch] = "test"
