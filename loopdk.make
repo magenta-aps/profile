@@ -321,7 +321,7 @@ projects[loop_post][branch] = "development";
 projects[loop_post_wysiwyg][type] = "module"
 projects[loop_post_wysiwyg][download][type] = "git"
 projects[loop_post_wysiwyg][download][url] = "git@github.com:os2loop/loop_post_wysiwyg.git"
-projects[loop_post_wysiwyg][branch] = "development";
+projects[loop_post_wysiwyg][download][branch] = "development";
 
 projects[loop_saml][type] = "module"
 projects[loop_saml][download][type] = "git"
