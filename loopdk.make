@@ -282,7 +282,7 @@ projects[loop_admin][download][branch] = "test"
 projects[loop_configure_theme][type] = "module"
 projects[loop_configure_theme][download][type] = "git"
 projects[loop_configure_theme][download][url] = "git@github.com:magenta-aps/loop_configure_theme.git"
-projects[loop_configure_theme][download][branch] = "test"
+projects[loop_configure_theme][download][branch] = "development"
 
 projects[loop_content][type] = "module"
 projects[loop_content][download][type] = "git"
