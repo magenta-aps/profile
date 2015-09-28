@@ -321,10 +321,10 @@ projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:os2loop/loop_post.git"
 projects[loop_post][branch] = "development";
 
-projects[loop_post][type] = "module"
-projects[loop_post][download][type] = "git"
-projects[loop_post][download][url] = "git@github.com:os2loop/loop_profession_optional.git"
-projects[loop_post][branch] = "development";
+projects[loop_profession_optional][type] = "module"
+projects[loop_profession_optional][download][type] = "git"
+projects[loop_profession_optional][download][url] = "git@github.com:os2loop/loop_profession_optional.git"
+projects[loop_profession_optional][branch] = "development";
 
 projects[loop_saml][type] = "module"
 projects[loop_saml][download][type] = "git"
