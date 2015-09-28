@@ -342,22 +342,22 @@ projects[loop_permissions][download][branch] = "test"
 projects[loop_post][type] = "module"
 projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:magenta-aps/loop_post.git"
-projects[loop_post][download][branch] = "test";
+projects[loop_post][download][branch] = "test"
 
 projects[loop_post][type] = "module"
 projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:magenta-aps/loop_post_wysiwyg.git"
-projects[loop_post][download][branch] = "test";
+projects[loop_post][download][branch] = "test"
 
 projects[loop_post][type] = "module"
 projects[loop_post][download][type] = "git"
 projects[loop_post][download][url] = "git@github.com:magenta-aps/loop_profession_optional.git"
-projects[loop_post][download][branch] = "test";
+projects[loop_post][download][branch] = "test"
 
 projects[loop_saml][type] = "module"
 projects[loop_saml][download][type] = "git"
 projects[loop_saml][download][url] = "git@github.com:magenta-aps/loop_saml.git"
-projects[loop_saml][download][branch] = "test";
+projects[loop_saml][download][branch] = "test"
 
 projects[loop_search][type] = "module"
 projects[loop_search][download][type] = "git"
@@ -367,7 +367,7 @@ projects[loop_search][download][branch] = "test"
 projects[loop_simplesamlphp][type] = "module"
 projects[loop_simplesamlphp][download][type] = "git"
 projects[loop_simplesamlphp][download][url] = "git@github.com:magenta-aps/loop_simplesamlphp.git"
-projects[loop_simplesamlphp][download][branch] = "test";
+projects[loop_simplesamlphp][download][branch] = "test"
 
 projects[loop_taxonomy][type] = "module"
 projects[loop_taxonomy][download][type] = "git"
