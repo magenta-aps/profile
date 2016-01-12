@@ -16,5 +16,5 @@ projects[drupal][patch][] = "https://www.drupal.org/files/issues/optimize_scan-2
 ; Install profile.
 projects[loopdk][type] = "profile"
 projects[loopdk][download][type] = "git"
-projects[loopdk][download][url] = "git@github.com:loopdk/profile.git"
-projects[loopdk][download][branch] = "release-v2.0.0"
+projects[loopdk][download][url] = "git@github.com:magenta-aps/profile.git"
+projects[loopdk][download][branch] = "test-release-v2.0.0"
