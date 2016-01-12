@@ -94,6 +94,10 @@ function loop_preprocess_page(&$variables) {
       drupal_set_title($variables['node']->title);
     }
   }
+
+  if (!theme_get_setting('show_breadcrumbs', 'loop')) {
+    drupal_set_breadcrumb(array());
+  }
 }
 
 /**
