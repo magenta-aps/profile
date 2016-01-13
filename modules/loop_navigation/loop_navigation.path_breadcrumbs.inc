@@ -12,6 +12,30 @@ function loop_navigation_path_breadcrumbs_settings_info() {
 
   $path_breadcrumb = new stdClass();
   $path_breadcrumb->api_version = 1;
+  $path_breadcrumb->machine_name = 'add_node';
+  $path_breadcrumb->name = 'Add node';
+  $path_breadcrumb->path = 'node/add/%type';
+  $path_breadcrumb->data = array(
+    'titles' => array(
+      0 => '!page_title',
+    ),
+    'paths' => array(
+      0 => '%site:current-page:path',
+    ),
+    'home' => 1,
+    'translatable' => 0,
+    'arguments' => array(
+      'type' => array(
+        'position' => 2,
+      ),
+    ),
+    'access' => array(),
+  );
+  $path_breadcrumb->weight = 0;
+  $export['add_node'] = $path_breadcrumb;
+
+  $path_breadcrumb = new stdClass();
+  $path_breadcrumb->api_version = 1;
   $path_breadcrumb->machine_name = 'node_breadcrumbs';
   $path_breadcrumb->name = 'Node breadcrumbs';
   $path_breadcrumb->path = 'node/%node';

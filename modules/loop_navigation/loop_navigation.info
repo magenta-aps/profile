@@ -22,6 +22,7 @@ features[menu_custom][] = management
 features[menu_custom][] = menu-loop-primary-menu
 features[menu_links][] = management_administration:admin
 features[menu_links][] = management_overview:admin/index
+features[path_breadcrumbs][] = add_node
 features[path_breadcrumbs][] = node_breadcrumbs
 features[path_breadcrumbs][] = subject_breadcrumb
 features[path_breadcrumbs][] = user_breadcrumb
