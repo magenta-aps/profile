@@ -36,6 +36,8 @@ plugins[panels][layouts] = templates/panels/layouts
 dependencies[] = style_settings
 
 ; Defaults for the theme configuration
+settings[show_logout_for_regular_users] = true
+settings[show_logout_for_saml_users] = true
 settings[show_breadcrumbs] = false
 settings[header_color] = #41ab51
 settings[header_logo_height] = 3em

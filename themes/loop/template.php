@@ -80,9 +80,15 @@ function loop_preprocess_page(&$variables) {
     }
   }
 
+  if (array_key_exists('logged_in_via_saml', $variables) && $variables['logged_in_via_saml']) {
+    $show_logout = theme_get_setting('show_logout_for_saml_users');
+  } else {
+    $show_logout = theme_get_setting('show_logout_for_regular_users');
+  }
+
   // We add logout link here to be able to always print it last. (Hence not part
   // of any menu).
-  if ($user->uid > 0 && !(array_key_exists('hide_logout', $variables) && $variables['hide_logout'])) {
+  if ($user->uid > 0 && $show_logout) {
     $variables['logout_link'] = l(t('Logout'), 'user/logout', array('attributes' => array('class' => array('nav--logout'))));
   }
 

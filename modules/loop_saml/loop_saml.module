@@ -155,8 +155,8 @@ function _loop_saml_setup_account($account, array $attributes) {
 /**
  * Implements hook_preprocess().
  *
- * We wish to hide the logout link.
+ * Inform the theme whether or not the user is logged in via SAML.
  */
 function loop_saml_preprocess(&$variables) {
-  $variables['hide_logout'] = TRUE;
+  $variables['logged_in_via_saml'] = saml_sp_drupal_login_is_authenticated();
 }

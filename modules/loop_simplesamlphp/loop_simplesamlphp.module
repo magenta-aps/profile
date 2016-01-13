@@ -201,8 +201,8 @@ function loop_simplesamlphp_init() {
 /**
  * Implements hook_preprocess().
  *
- * We wish to hide the logout link.
+ * Inform the theme whether or not the user is logged in via SAML.
  */
 function loop_simplesamlphp_preprocess(&$variables) {
-  $variables['hide_logout'] = TRUE;
+  $variables['logged_in_via_saml'] = simplesamlphp_auth_is_authenticated();
 }
