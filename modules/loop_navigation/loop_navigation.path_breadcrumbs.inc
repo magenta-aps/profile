@@ -148,7 +148,7 @@ function loop_navigation_path_breadcrumbs_settings_info() {
           'identifier' => 'Bruger: ID',
         ),
       ),
-      'page' => array(
+      'subpage' => array(
         'position' => 2,
       ),
     ),
