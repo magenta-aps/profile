@@ -26,6 +26,7 @@ features[path_breadcrumbs][] = add_node
 features[path_breadcrumbs][] = node_breadcrumbs
 features[path_breadcrumbs][] = subject_breadcrumb
 features[path_breadcrumbs][] = user_breadcrumb
+features[path_breadcrumbs][] = user_subpage_breadcrumb
 features[variable][] = menu_block_ids
 features[variable][] = menu_expanded
 features[variable][] = special_menu_items_nolink_tag
