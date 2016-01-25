@@ -52,13 +52,13 @@
   <title><?php print $head_title; ?></title>
   <?php print $styles; ?>
   <!--[if IE]>
-  <link rel="stylesheet" href="/profiles/loop/themes/loop/css/ie.css" />
+  <link rel="stylesheet" href="/profiles/loopdk/themes/loop/css/ie.css" />
   <![endif]-->
   <!--[if IE 8]>
-  <link rel="stylesheet" href="/profiles/loop/themes/loop/css/ie8.css" />
+  <link rel="stylesheet" href="/profiles/loopdk/themes/loop/css/ie8.css" />
   <![endif]-->
   <!--[if lt IE 10]>
-  <link rel="stylesheet" href="/profiles/loop/themes/loop/css/lt-ie10.css" />
+  <link rel="stylesheet" href="/profiles/loopdk/themes/loop/css/lt-ie10.css" />
   <![endif]-->
   <?php print $scripts; ?>
 </head>
