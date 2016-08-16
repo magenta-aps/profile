@@ -1,0 +1,9 @@
+name = Loop SAML
+description = SAML functionality
+core = 7.x
+package = Loop
+version = 7.x-1.0
+project = loop_saml
+dependencies[] = saml_sp
+dependencies[] = saml_sp_drupal_login
+dependencies[] = secure_permissions

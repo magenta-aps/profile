@@ -1,7 +1,7 @@
-name = LOOP
-project = LOOP
-distribution_name = "LOOP"
-description = "LOOPDK install profile"
+name = Loop
+project = Loop
+distribution_name = "Loop"
+description = "Loop install profile"
 core = 7.x
 php_memory_limit = 128M
 exclusive = TRUE
@@ -20,6 +20,7 @@ dependencies[] = entityreference
 dependencies[] = diff
 dependencies[] = facetapi
 dependencies[] = features
+dependencies[] = features_override
 dependencies[] = fe_block
 dependencies[] = field_group
 dependencies[] = field_ui
@@ -56,6 +57,7 @@ dependencies[] = shorten
 dependencies[] = shortener
 dependencies[] = shurly
 dependencies[] = strongarm
+dependencies[] = style_settings
 dependencies[] = taxonomy
 dependencies[] = taxonomy_manager
 dependencies[] = token
@@ -66,16 +68,24 @@ dependencies[] = views_bulk_operations
 dependencies[] = views_ui
 dependencies[] = wysiwyg
 
-; LOOP features
+; Loop features
 dependencies[] = loop_content
 dependencies[] = loop_field_bases
 dependencies[] = loop_post
 dependencies[] = loop_frontpage
 dependencies[] = loop_navigation
 
-; LOOP modules
+; Loop modules
 dependencies[] = loop_admin
 dependencies[] = loop_frontend
 dependencies[] = loop_permissions
 dependencies[] = loop_search
 dependencies[] = loop_user
+dependencies[] = loop_dashboard
+dependencies[] = loop_external_data
+dependencies[] = loop_external_sources_content
+dependencies[] = loop_friend_notification
+dependencies[] = loop_instruction
+dependencies[] = loop_profession_optional
+dependencies[] = loop_user_messages
+dependencies[] = loop_user_subscriptions

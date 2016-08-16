@@ -1,0 +1,10 @@
+/**
+ * IE specific styles (All internet explorers)
+ */
+.anim-open-notification-tab {
+  display: block;
+  min-height: 80px; }
+
+.anim-close-notification-tab {
+  display: none;
+  min-height: 0; }

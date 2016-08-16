@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user messages feature.
+ */
+
+include_once 'loop_user_messages.features.inc';

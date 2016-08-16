@@ -1,0 +1,166 @@
+/**
+ * Twitter typeahead
+ *
+ * http://twitter.github.io/typeahead.js/
+ *
+ */
+
+
+.typeahead-block {
+  @extend %set-max-width-and-center-element;
+  @extend %basic-element-styling;
+
+  z-index: 1;
+  position: relative;
+
+  // Compensate for margin from header (necessary when not logged in)
+  margin-top: -$margin-bottom;
+
+  // Override Drupal's classes.
+  .form-item {
+    border: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  @include breakpoint($layout-max-width) {
+    @include border-radius(0 0 $border-radius $border-radius);
+  }
+}
+
+.typeahead-block--wrapper {
+  position: relative;
+
+  .tt-hint,
+  .typeahead {
+    margin-bottom: 1em;
+    padding-top: 1.25em;
+    padding-right: 1.25em;
+    padding-bottom: 1.25em;
+    padding-left: 3em;
+    height: 65px;
+
+    background-color: $white;
+
+    // Removing the browsers outline border when field is in focus
+    &:focus {
+      outline: none;
+    }
+
+    @include breakpoint($breakpoint-3) {
+      margin-bottom: 0;
+      padding-right: 6em;
+      width: 90%;
+
+      @include border-radius($border-radius 0 0 $border-radius);
+    }
+  }
+}
+
+.twitter-typeahead {
+  display: block !important;
+
+  background-color: $white;
+
+  @include border-radius($border-radius);
+
+  &:before {
+    @extend %icon-search;
+
+    position: absolute;
+    top: .5em;
+    left: .49em;
+
+    color: $gray;
+    font-size: 200%;
+
+    z-index: 99;
+  }
+
+  [class^=tt-dataset] {
+    margin-bottom: 2em;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.typeahead-block--button {
+  @extend .button--action;
+  margin: 0;
+  height: 65px;
+  width: 100%;
+
+  &:disabled {
+    @extend .button--deactivated;
+  }
+
+  @include breakpoint($breakpoint-3) {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+
+    padding-top: .5em;
+    padding-bottom: .65em;
+    width: auto;
+
+    font-size: 150%;
+
+    @include border-radius(0 $border-radius $border-radius 0);
+  }
+}
+
+
+/* Suggestions
+   ========================================================================== */
+
+.tt-dropdown-menu {
+  position: absolute;
+  z-index: 90;
+
+  border: 1px solid $gray-dark;
+  margin-top: .5em;
+  padding: 1em;
+  width: 100%;
+
+  background-color: $white;
+
+  @include border-radius($border-radius);
+  @include box-sizing(border-box);
+
+  @include breakpoint($breakpoint-3) {
+    top: 7.5em;
+  }
+}
+
+.tt-suggestion-header {
+  font-size: 110%;
+  font-weight: bold;
+
+  @include element-spacing(1em);
+}
+
+.tt-suggestion {
+  color: $link-color;
+  cursor: pointer;
+  display: block;
+
+  @include element-spacing(1em);
+
+  &:link,
+  &:visited {
+    text-decoration: none;
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+}

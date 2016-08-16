@@ -1,0 +1,65 @@
+/**
+ * Question module
+ *
+ * @author magnify
+ */
+
+
+/* Question
+   ================================================================================================================== */
+
+.external-sources--wrapper {
+  margin-bottom: 2.5em;
+
+  &.has-comments {
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.external-sources--meta-data {
+  margin-bottom: $margin-bottom;
+  padding: .5em 1.25em .65em;
+
+  background-color: $gray-background;
+  color: $gray-color;
+  font-size: 80%;
+
+  @include border-radius($border-radius);
+
+  @include breakpoint(51em) {
+    float: right;
+  }
+}
+
+
+.external-sources--inner {
+  clear: both;
+  
+  padding-bottom: 2em;
+}
+
+.external-sources--description {
+  margin-bottom: 0;
+  color: #b3b3b3;
+  font-size: .85em;
+}
+
+.external-sources--label {
+  display: block;
+  margin-bottom: .25em;
+
+  font-size: 125%;
+  font-weight: bold;
+}
+
+.question--label-edit-link {
+  font-weight: normal;
+}
+
+.external-sources--terms {
+  margin-bottom: 2em;
+}
+
+.external-sources--term {
+  @extend %tag;
+}

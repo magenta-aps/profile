@@ -1,0 +1,13 @@
+name = Loop user page views
+description = Holds public views used on the users profile pages
+core = 7.x
+package = Loop
+dependencies[] = loop_post
+dependencies[] = loop_user
+dependencies[] = views
+dependencies[] = views_content
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = loop_user_comments
+features[views_view][] = loop_user_nodes
+features_exclude[dependencies][ctools] = ctools

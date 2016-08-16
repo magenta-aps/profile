@@ -1,0 +1,196 @@
+/**
+ *
+ * Comment module
+ *
+ */
+
+
+/* Comments
+   ================================================================================================================== */
+
+.comments--comment {
+  position: relative;
+
+  border-bottom: 1px solid $border-color;
+  margin-bottom: 2em;
+  padding-bottom: 1.5em;
+
+  &.is-sticky {
+    border: 1px solid $green;
+    margin-bottom: 2.5em;
+    padding: 1.5em;
+
+    background-color: lighten($green-lighter, 15%);
+
+    @include border-radius($border-radius);
+  }
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.comments--comment-meta-data {
+  @extend .meta-data--date;
+
+  position: relative;
+}
+
+.comments--comment-meta-data-date {
+  margin-right: 2em;
+}
+
+.comments--comment-content {
+  margin-bottom: 1em;
+}
+
+.comment--flag {
+  @extend .flag;
+
+  &.is-sticky {
+    top: 1.5em;
+    right: 1.5em;
+
+    background-color: $white;
+  }
+
+  /* Breakpoints */
+  @include breakpoint(60em) {
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    display: inline-block;
+  }
+}
+
+.comments--files {
+  background-color: #f2f2f2;
+  color: #999999;
+  clear: both;
+  font-size: 80%;
+  margin-bottom: 1em;
+  overflow: hidden;
+  padding: .5em 1.25em .65em;
+
+  @include breakpoint (65em) {
+    max-width: 16em;
+  }
+}
+
+.comments--icon {
+  height: 16px;
+  width: 16px;
+  float: left;
+  display: block;
+  margin-right: .5em;
+  background: url('../images/document-icon.png') no-repeat right top;
+}
+
+.comments--icon-application-pdf {
+  background: url('../images/pdf-icon.png') no-repeat right top;
+}
+
+.comments--icon-image-jpeg,
+.comments--icon-image-png,{
+  background: url('../images/image-icon.png') no-repeat right top;
+}
+
+.comments--files-label {
+  float: left;
+  margin-right: 1.6em;
+}
+
+.comments--files-content {
+  float: left;
+}
+
+
+/* Inapropriate flag */
+
+.comments--abuse {
+  font-size: .8em;
+  list-style-type: none;
+  overflow: hidden;
+  padding: 0;
+  white-space: nowrap;
+
+  .links {
+    list-style: none;
+    padding: 0;
+  }
+
+  @include custom-links($green, $green, $green);
+
+  a {
+    &:before {
+      @extend %icon-flag-filled;
+      @extend %icon-before;
+
+      margin-right: .5em;
+    }
+
+    &:hover {
+      color: $green;
+    }
+  }
+}
+
+
+.comments--editor-actions {
+  font-size: .8em;
+  list-style-type: none;
+  margin-bottom: 1em;
+  overflow: hidden;
+  padding: 0;
+  white-space: nowrap;
+
+  .comments--editor-actions-delete,
+  .comments--editor-actions-edit {
+    box-sizing: border-box;
+    font-size: .9em;
+    display: inline-block;
+    width: 48%;
+
+    @include breakpoint($breakpoint-4) {
+      float: right;
+      max-width: 11em;
+    }
+
+    a {
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  .comments--editor-actions-delete {
+    @extend .button--warning;
+  }
+
+  .comments--editor-actions-edit {
+    @extend .button--neutral;
+
+    &:last-child {
+      margin-right: .5em;
+    }
+  }
+}
+
+
+
+
+/* Comments list on user page
+   ================================================================================================================== */
+.comments--user-page-comments-element {
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+  border-bottom: 1px solid $border-color;
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.comments--user-page-comments-new {
+  @extend %tag;
+}

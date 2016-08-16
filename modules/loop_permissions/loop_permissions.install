@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function loop_permissions_install() {
+  db_insert('node_limit')
+    ->fields(array(
+      'lid' => 1,
+      'nlimit' => 0,
+      'title' => 'Disable read only role content creation',
+      'weight' => 0
+    ))
+    ->execute();
+
+  db_insert('node_limit_role')
+    ->fields(array(
+      'lid' => 1,
+      'rid' => 6
+    ))
+    ->execute();
+}

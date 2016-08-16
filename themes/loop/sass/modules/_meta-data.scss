@@ -1,0 +1,66 @@
+/**
+ * Meta data module
+ *
+ * @author magnify
+ */
+
+
+
+.meta-data--author {
+  margin-bottom: .75em;
+  margin-left: -2em;
+  margin-right: 2em;
+
+  @include breakpoint($layout-max-width) {
+    margin-left: 0;
+  }
+
+  @include breakpoint(51em) {
+    float: left;
+  }
+}
+
+.meta-data--date {
+  display: block;
+
+  color: $gray-light;
+  clear: both;
+  font-size: .85em;
+}
+
+.meta-data--author-image {
+  position: absolute;
+
+  border: 1px solid $border-color;
+  display: inline-block;
+  overflow: hidden;
+  margin-right: .5em;
+  max-height: 3em;
+  max-width: 3em;
+
+  background-color: $white;
+
+  @include border-radius($border-radius);
+}
+
+.meta-data--author-wrapper {
+  vertical-align: top;
+
+  display: inline-block;
+  margin-left: 4em;
+  max-width: 100%;
+
+  @include breakpoint(60em) {
+    max-width: 20em;
+  }
+}
+
+.meta-data--author-link {
+  font-weight: bold;
+}
+
+.meta-data--author-title {
+  display: block;
+
+  @include opacity(.5);
+}

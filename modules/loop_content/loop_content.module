@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Content feature.
+ */
+
+include_once 'loop_content.features.inc';

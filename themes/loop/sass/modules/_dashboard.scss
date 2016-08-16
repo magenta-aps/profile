@@ -1,0 +1,411 @@
+/**
+ *
+ * Dashboard
+ *
+ */
+
+.dashboard-list {
+  margin-bottom: 1em;
+}
+
+.dashboard-list--header {
+  @extend %simple-list--header;
+
+  margin-bottom: .75em;
+}
+
+.dashboard-list--filter {
+  @include element-spacing(1em);
+
+  position: relative;
+
+  border-bottom: 0;
+
+  // Nesting to override default padding
+  .dashboard-list--filter-field {
+    padding-left: 2.5em;
+  }
+
+  &:before {
+    @extend %icon-filter;
+    @extend %icon-before;
+
+    position: absolute;
+    top: 1.1em;
+    left: .9em;
+
+    max-width: 1em;
+
+    @include opacity(.25);
+  }
+
+  // Nesting since the throbber is drupal core ajax construction.
+  .ajax-progress {
+    position: absolute;
+    top: 0.8em;
+    right: 0.6em;
+  }
+}
+
+.dashboard-list--form {
+  margin-bottom: 1em;
+
+  .views-widget-filter-title,
+  .views-widget-filter-date_filter .container-inline-date {
+    margin-bottom: 1em;
+
+    label {
+      float: left;
+      width: 100%;
+    }
+  }
+}
+
+.dashboard--comment-filters {
+  margin-bottom: 1em;
+}
+
+.dashboard--sorting {
+  font-size: 78%;
+  margin-bottom: 2em;
+
+  @include breakpoint(30em) {
+    font-size: 100%;
+  }
+}
+
+.dashboard--filter-label {
+  font-weight: bold;
+}
+
+.dashboard--filter-links {
+  text-decoration: none;
+  @include custom-links($green, $white);
+
+  &.is-active {
+    background: $green;
+    color: $white;
+  }
+}
+
+.dashboard--sort-links {
+  text-decoration: none;
+  @include custom-links($green, $white);
+
+  &.is-active {
+    background: $green;
+    color: $white;
+  }
+}
+
+.dashboard--filter-link {
+  background: $white;
+  box-sizing: border-box;
+  border: 1px solid $green;
+  border-right: 0;
+  display: inline-block;
+  margin-left: -4px;
+  padding: 0.5em 0;
+  text-align: center;
+  width: 50%;
+
+  &.is-active {
+    background: $green;
+    color: $white;
+  }
+
+  &:first-child {
+    border-radius: (.5em 0 0 .5em);
+  }
+
+  &:last-child {
+    border: 1px solid $green;
+    border-radius: (0 .5em .5em 0);
+  }
+}
+
+.dashboard--sort-link {
+  background: $white;
+  box-sizing: border-box;
+  border: 1px solid $green;
+  border-right: 0;
+  display: inline-block;
+  margin-left: -4px;
+  padding: 0.5em 0;
+  text-align: center;
+  width: 25%;
+
+  &.is-active {
+    background: $green;
+    color: $white;
+  }
+
+  &:first-child {
+    border-radius: (.5em 0 0 .5em);
+  }
+
+  &:last-child {
+    border: 1px solid $green;
+    border-radius: (0 .5em .5em 0);
+  }
+}
+
+.js-has-answers-removed {
+  width: 33.33%;
+
+  &.is-last {
+    border: 1px solid $green;
+    border-radius: (0 .5em .5em 0);
+  }
+
+  &.is-hidden {
+    display: none;
+  }
+}
+
+
+.dashboard-list--filter--content {
+  margin-bottom: 1em;
+  position: relative;
+
+  .ajax-progress {
+    position: absolute;
+    top: 1.8em;
+    right: 3em;
+  }
+}
+
+.dashboard-list--more-link {
+  text-align: center;
+}
+
+
+.dashboard-list--submit {
+  float: right;
+  visibility: hidden;
+  height: 0;
+  width: 0;
+
+  &#edit-submit-loop-node-statistics{
+    float: none;
+    visibility: visible;
+    height: auto;
+    width: auto;
+  }
+}
+
+
+
+%dashboard-list--item {
+  @extend %simple-list--item;
+
+  position: relative;
+}
+
+%dashboard-list--text {
+  @extend %simple-list--text;
+}
+
+%dashboard-list--meta-data {
+  color: $gray-light;
+  font-size: 12px;
+}
+
+.dashboard-list--item {
+  @extend %dashboard-list--item;
+
+  .dashboard-list--text {
+    @extend %dashboard-list--text;
+  }
+
+  .dashboard-list--meta-data {
+    @extend %dashboard-list--meta-data;
+  }
+}
+
+.dashboard-image-list--item,
+.dashboard-user-list--item {
+  @extend %dashboard-list--item;
+
+  .dashboard-list--text {
+    @extend %dashboard-list--text;
+
+    padding-left: 4em;
+  }
+
+  .dashboard-list--meta-data {
+    @extend %dashboard-list--meta-data;
+
+    display: block;
+  }
+}
+
+.dashboard-list--icon {
+  position: absolute;
+  top: .75em;
+  right: 0;
+
+  max-width: 1.25em;
+
+  line-height: 1em;
+
+  &:before {
+    @extend %icon-pencil;
+    @extend %icon-before;
+
+    font-size: 1.25em;
+  }
+}
+
+.dashboard-list--question-title {
+  color: #cccccc;
+  font-size: 12px;
+
+  &:before {
+    @extend %icon-help-circled;
+    @extend %icon-before;
+  }
+}
+
+.dashboard--spinner {
+  background: transparent url("../images/loader.png") no-repeat 0 0;
+  display: block;
+  height: 20px;
+  width: 20px;
+  margin: 0 auto;
+
+  @include animation(spinner 1s);
+
+  animation-iteration-count: infinite;
+  -webkit-animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  -webkit-animation-timing-function: linear;
+}
+
+.dashboard--show-only-link-short,
+.dashboard--alphabetical-link-short {
+  display: inline-block;
+
+  @include breakpoint(30em) {
+    display: none;
+  }
+}
+
+.dashboard--show-only-link-long,
+.dashboard--alphabetical-link-long {
+  display: none;
+
+  @include breakpoint(30em) {
+    display: inline-block;
+  }
+}
+
+.dashboard--replies-link-short {
+  display: inline-block;
+
+  @include breakpoint(30em) {
+    display: none;
+  }
+}
+
+.dashboard--replies-link-long {
+  display: none;
+
+  @include breakpoint(30em) {
+    display: inline-block;
+  }
+}
+
+
+/**
+* The user statistics page has its own style setup.
+*/
+
+.page-editor-dashboard-user-statistics .container-inline-date label{
+  float: left;
+  width: 100%;
+}
+
+
+/* Loop internal statistics
+   ================================================================================================================== */
+
+.dashboard--statistics-table {
+  box-sizing: border-box;
+  display: inline-block;
+  margin-left: -4px;
+  padding: 0 1em;
+  width: 100%;
+
+  @include breakpoint(80em) {
+    width: 25%;
+  }
+
+  th,
+  td {
+    width: 70%;
+  }
+
+
+  td:last-child,
+  th:last-child {
+    text-align: center;
+    width: 30%;
+  }
+
+  thead,
+  tbody {
+    display: inline-table;
+    min-height: 4em;
+    width: 100%;
+  }
+}
+
+.dashboard--content-statistics-table {
+  box-sizing: border-box;
+  display: inline-block;
+  margin-left: -4px;
+  padding: 0 1em;
+  width: 100%;
+
+  @include breakpoint(80em) {
+    width: 33%;
+  }
+
+  th,
+  td {
+    width: 75%;
+  }
+
+  td:last-child,
+  th:last-child {
+    text-align: center;
+    width: 25%;
+  }
+
+  thead,
+  tbody {
+    display: inline-table;
+    min-height: 4em;
+    width: 100%;
+  }
+}
+
+.dashboard--content-overview {
+  @extend .dashboard--content-statistics-table;  // Extend to include width etc.
+
+  vertical-align: top;
+}
+
+.dashboard--content-overview-inner {
+  background: $gray-lightest;
+  border: 1px solid $gray-light;
+  box-sizing: border-box;
+  margin-bottom: 1em;
+  padding: 3em 1em;
+  text-align: center;
+}
+
+.dashboard--content-overview-text {
+  font-size: 1.2em;
+}

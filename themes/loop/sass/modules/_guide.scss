@@ -1,0 +1,66 @@
+/**
+ *
+ * Guide
+ *
+ */
+
+
+.guide--nav-wrapper {
+  padding-top: 1em;
+  padding-bottom: 1.5em;
+  padding-left: 1.5em;
+
+  background-color: $gray-lightest;
+
+  @include border-radius($border-radius);
+  @include box-sizing(border-box);
+}
+
+.guide--nav-wrapper-inner {
+  overflow-y: visible;
+  height: auto;
+  
+  padding-right: 1.5em;
+}
+
+.guide--nav-list {
+  margin: 0;
+  padding-left: 0;
+
+  list-style: none;
+}
+
+.guide--nav-list-title {
+  border-bottom: 1px solid $border-color;
+  cursor: pointer;
+  padding-bottom: .5em;
+
+  font-weight: bold;
+}
+
+.guide--nav-list-sublist {
+  padding-left: 1em;
+
+  list-style: none;
+}
+
+.guide--nav-list-item {
+  margin-top: .25em;
+  margin-bottom: .25em;
+
+  // Breaking our margin rule because it is easier to tell which items has sub lists than the other way around.
+  &.has-sublist {
+    margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  .active {
+    font-weight: bold;
+    margin-left: -13px;
+
+    &:before {
+      @extend %icon-arrow-right-medium;
+      @extend %icon-before;
+    }
+  }
+}

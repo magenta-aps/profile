@@ -1,0 +1,147 @@
+/**
+ *
+ * Block module
+ *
+ */
+
+
+.block-module {
+  margin-bottom: $margin-bottom;
+
+  background-color: $gray-lightest;
+
+  @include border-radius($border-radius);
+}
+
+.block-module--inner {
+  padding: 1.5em;
+}
+
+.block-module--header {
+  font-size: 130%;
+  font-weight: bold;
+}
+
+.block-module--content {
+  margin-bottom: 1em;
+}
+
+
+.block--pcp,
+.block-my-content,
+.block-follow-question {
+  @extend .block-module;
+}
+
+
+.block-module--title {
+  font-size: 130%;
+  font-weight: bold;
+}
+
+
+/* User links block
+   ================================================================================================================== */
+
+.block-user-links {
+  @extend .block-module;
+
+  display: none;
+
+  @include breakpoint(45em) {
+    display: block;
+
+    background-color: $green;
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .block-module-user-links-list-sub {
+      padding: 0 0 0 1em;
+    }
+  }
+}
+
+.block-module--user-links-header {
+  @extend .block-module--header;
+
+  border-bottom: 1px solid $green-light;
+  color: $white;
+  padding-bottom: 0.5em;
+}
+
+.block-module--user-links-item {
+  display: block;
+
+  @include element-spacing(1em);
+  @include custom-menu-links($white);
+
+  // Override the border color from element-spacing mixin.
+  border-bottom-color: $green-light;
+
+  &.active {
+    font-weight: bold;
+  }
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+
+/* My content block
+   ================================================================================================================== */
+
+.block-my-content {
+  display: none;
+
+  @include breakpoint(45em) {
+    display: block;
+  }
+}
+
+.block-module--my-content-header {
+  @extend .block-module--header;
+
+  border-bottom: 1px solid $gray-lighter;
+  padding-bottom: 0.5em;
+}
+
+.block-module--my-content-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.block-module--my-content-item {
+  display: block;
+
+  border-bottom-color: $gray-light;
+
+  @include element-spacing(1em);
+  @include custom-menu-links($green);
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+
+  &.active {
+    font-weight: bold;
+  }
+}
+
+
+/* Profile complete persentage
+   ================================================================================================================== */
+.block--pcp {
+
+}
+
+.block--pcp-text {
+  margin-bottom: 0;
+  color: #b3b3b3;
+  font-size: .85em;
+}

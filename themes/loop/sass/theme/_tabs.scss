@@ -1,0 +1,113 @@
+/**
+ * Tabs
+ */
+
+
+.tabs {
+  margin-bottom: 1em;
+
+  @include breakpoint($layout-max-width) {
+    margin-bottom: 0;
+  }
+
+  &.primary {
+    border: none;
+    margin-top: 0;
+    padding: 1em;
+
+    background-color: $white;
+
+    @include border-radius($border-radius);
+
+    @include breakpoint($layout-max-width) {
+      padding-top: 0;
+      padding-right: 0;
+      padding-bottom: 0;
+      padding-left: .5em;
+
+      background-color: transparent;
+    }
+  }
+
+  li,
+  li.active,
+  li:hover,
+  li.active:hover {
+    border-right: none;
+    display: block;
+    margin-bottom: .5em;
+    padding-right: 0;
+
+    background: transparent;
+
+    a {
+      border: 1px solid $gray-light;
+      display: block;
+      margin: 0;
+      padding: .75em 1.25em;
+
+      line-height: 100%;
+      text-decoration: none;
+
+      @include border-radius($border-radius);
+
+      &:hover {
+        background: $gray-lightest;
+        color: $black;
+        text-decoration: none;
+      }
+    }
+
+    @include breakpoint($layout-max-width) {
+      display: inline-block;
+      margin-bottom: 0;
+
+      a {
+        border-bottom: 0;
+        padding: .75em 1.25em .5em;
+
+        @include border-radius($border-radius $border-radius 0 0);
+      }
+
+    }
+  }
+
+  li a {
+    background: $gray-lightest;
+  }
+
+  li a.active {
+    background: $white;
+  }
+
+  &.secondary {
+    margin-top: 0;
+    margin-bottom: -1.75em;
+    padding: 1.5em 1em;
+
+    background-color: $white;
+
+    li {
+      a,
+      a:hover {
+        border: 1px solid $gray-light;
+        padding: .5em 1.25em;
+
+        background: $white;
+      }
+
+      a.active {
+        background: $gray-lighter;
+      }
+    }
+
+    li,
+    li.active,
+    li:hover,
+    li.active:hover {
+      a {
+        @include border-radius($border-radius);
+      }
+    }
+  }
+}

@@ -1,0 +1,167 @@
+<?php
+/**
+ * @file
+ * Code for the Loop friend notification feature.
+ */
+
+include_once 'loop_friend_notification.features.inc';
+
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function loop_friend_notification_ctools_plugin_directory($owner, $plugin_type) {
+  if ($owner == 'ctools' && $plugin_type == 'content_types') {
+    return 'plugins/' . $plugin_type;
+  }
+}
+
+/**
+ * An edit form for the pane's settings.
+ */
+function loop_friend_notification_pane_custom_pane_edit_form($form, &$form_state) {
+  $conf = $form_state['conf'];
+
+  $form['text'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Panel Text'),
+    '#description' => t('Text to display, it may use substitution strings'),
+    '#default_value' => $conf['text'],
+  );
+
+  return $form;
+}
+
+/**
+ * Submit function, note anything in the formstate[conf] automatically gets saved
+ * Notice, the magic that automatically does that for you.
+ */
+function loop_friend_notification_pane_custom_pane_edit_form_submit(&$form, &$form_state) {
+  foreach (array_keys($form_state['plugin']['defaults']) as $key) {
+    if (isset($form_state['values'][$key])) {
+      $form_state['conf'][$key] = $form_state['values'][$key];
+    }
+  }
+}
+
+
+/**
+ * Run-time rendering of the body of the block (content type)
+ * See ctools_plugin_examples for more advanced info
+ */
+function loop_friend_notification_pane_custom_pane_render($subtype, $conf, $args, $contexts) {
+  $block = new stdClass();
+
+  // initial content is blank
+  $block->title = t('Notify friend'); // This will be overridden by the user within the panel options.
+  $block->content = array(
+    'form' => loop_friend_notification_form()
+  );
+
+  return $block;
+}
+
+
+/**
+ * 'admin info' callback for panel pane.
+ */
+function loop_friend_notification_pane_custom_pane_admin_info($subtype, $conf, $contexts) {
+  if (!empty($conf)) {
+    $block = new stdClass();
+    $block->title = $conf['override_title'] ? $conf['override_title_text'] : '';
+    $block->content = $conf['text'];
+    return $block;
+  }
+}
+
+
+/**
+ * Implements hook_form().
+ */
+function loop_friend_notification_form() {
+  return drupal_get_form("loop_friend_notification_notify_form");
+}
+
+function loop_friend_notification_notify_form($form) {
+  $form['recipient'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Recipient:'),
+    '#name' => 'recipient',
+    '#size' => 30,
+    '#maxlength' => 60,
+    '#autocomplete_path' => 'user/autocomplete',
+    '#default_value' => "",
+    '#weight' => -1,
+    '#id' => 'notifyFriend'
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t("Send"),
+    '#name' => "sendToFriend",
+  );
+  return $form;
+}
+
+
+function loop_friend_notification_notify_form_validate($form, $form_state) {
+  $recipient_name = $form['recipient']['#value'];
+  if (user_load_by_name($recipient_name) !== FALSE) {
+    // ok, we have an existing user
+  }
+  else {
+    if (valid_email_address($recipient_name)) {
+      // ok, we have a valid mail address
+    }
+    else {
+      form_set_error('recipient', t("Recipient doesn't exist; notification not sent"));
+    }
+  }
+}
+
+function loop_friend_notification_notify_form_submit($form, $form_state) {
+  global $user;
+  $recipient_name = $form['recipient']['#value'];
+  $recipient_user = user_load_by_name($recipient_name);
+  if ($recipient_user !== FALSE) {
+    $message = message_create('user_sharing_node_reference', array('uid' => $recipient_user->uid));
+    $wrapper = entity_metadata_wrapper('message', $message);
+    $wrapper->field_node->set(menu_get_object());
+    $wrapper->field_sender->set($user);
+    $wrapper->save();
+    drupal_set_message(t('Notification sent'), 'status');
+  }
+  else {
+    if (valid_email_address($recipient_name)) {
+      $message = message_create('user_sharing_node_reference', array('uid' => 0));
+      $wrapper = entity_metadata_wrapper('message', $message);
+      $wrapper->field_node->set(menu_get_object());
+      $wrapper->field_sender->set($user);
+      $language = user_preferred_language($user);
+      $subject = t("Loop notification");
+      $body = message_property_get_text($message, array('language' => $language));
+      $sent = drupal_mail("loop_friend_notification", 'friend_notification', $recipient_name, $language, array(
+        'subject' => $subject,
+        'body' => $body
+      ));
+      if ($sent) {
+        drupal_set_message(t('Email sent'), 'status');
+      }
+      else {
+        drupal_set_message(t('Email could not be sent'), 'error');
+      }
+
+    }
+  }
+}
+
+function loop_friend_notification_mail($key, &$message, $params) {
+  switch ($key) {
+
+    case 'friend_notification':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['body'];
+      break;
+  }
+}
+?>
+

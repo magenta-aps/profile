@@ -1,0 +1,254 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user feature.
+ */
+
+include_once 'loop_user.features.inc';
+
+/**
+ * Implements hook_views_api().
+ */
+function loop_user_views_api() {
+  return array('api' => 3.0);
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function loop_user_block_info() {
+  return array(
+    'loop_user_my_content' => array(
+      'info' => t('User my content'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+    'loop_user_best_answers' => array(
+      'info' => t('User best answers'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function loop_user_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'loop_user_my_content':
+      // "My content" block.
+      if (user_access('access content')) {
+        if (arg(0) == 'user' && is_numeric(arg(1))) {
+          $profile = user_load(arg(1));
+        }
+        else {
+          $profile = FALSE;
+        }
+        $variables = array('profile' => $profile);
+        $block['content'] = theme('loop_user_my_content', $variables);
+      }
+      else {
+        $block['content'] = FALSE;
+      }
+      break;
+
+    case 'loop_user_best_answers':
+      // Display users best answers.
+      if (user_access('access content')) {
+        if (arg(0) == 'user' && is_numeric(arg(1))) {
+          $uid = arg(1);
+          $variables = _loop_user_fetch_user_answers($uid);
+          $block['content'] = theme('loop_user_best_answers', $variables);
+        }
+      }
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_user_theme() {
+  return array(
+    'loop_user_my_content' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-user--my-content',
+    ),
+    'loop_user_best_answers' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-user--best-answers',
+    ),
+  );
+}
+
+/**
+ * Fetches users answers and and number of best answers.
+ *
+ * @param string $uid
+ *   The user.
+ *
+ * @return array
+ *   The answers.
+ */
+function _loop_user_fetch_user_answers($uid) {
+  // Fetch all flags.
+  $flags = db_select('flag_counts', 'f')
+    ->fields('f')
+    ->condition('entity_type', 'comment')
+    ->orderBy('count')
+    ->execute()
+    ->fetchAllAssoc('entity_id');
+
+  // Fetch all comments.
+  $comments = db_select('comment', 'c')
+    ->fields('c')
+    ->execute()
+    ->fetchAllAssoc('cid');
+
+  $user_comments = db_select('comment', 'c')
+    ->fields('c')
+    ->condition('uid', $uid)
+    ->execute()
+    ->fetchAllAssoc('cid');
+
+  $top_comments = array();
+  $nids = array();
+  foreach ($flags as $flag) {
+    // Find comment.
+    $comment = (isset($comments[$flag->entity_id])) ? $comments[$flag->entity_id] : FALSE;
+
+    // Skip if comment already added.
+    if (array_search($comment->nid, $nids) !== FALSE) {
+      continue;
+    }
+
+    // Add comment to user.
+    if ($comment->uid == $uid) {
+      $top_comments[] = array(
+        'comment' => $comment,
+        'flag' => $flags[$comment->cid],
+      );
+    }
+
+    $nids[] = $comment->nid;
+  }
+
+  // Send data back.
+  $answers_array = array(
+    'answers_count' => count($user_comments),
+    'top_answers' => $top_comments,
+    'top_answers_count' => count($top_comments),
+  );
+
+  return $answers_array;
+}
+
+/**
+ * Implements hook_form_user_profile_from_alter().
+ *
+ * Changes the default account validation callback.
+ */
+function loop_user_form_user_profile_form_alter(&$form, &$form_state, $form_id) {
+  foreach ($form['#validate'] as $key => $validate) {
+    if ($validate == 'user_account_form_validate') {
+      $form['#validate'][$key] = 'loop_user_account_form_validate';
+    }
+  }
+}
+
+/**
+ * Validation function for the user account.
+ *
+ * This is a copy of the Drupal user validate function, with the check for validate user name modified. As the "\" char
+ * is in the username if the user is logged in via SAML.
+ */
+function loop_user_account_form_validate($form, &$form_state) {
+  if ($form['#user_category'] == 'account' || $form['#user_category'] == 'register') {
+    $account = $form['#user'];
+    // Validate new or changing username.
+    if (isset($form_state['values']['name'])) {
+      // This check is the change from drupal core.
+      if ($error = loop_user_validate_name($form_state['values']['name'])) {
+        form_set_error('name', $error);
+      }
+      elseif ((bool) db_select('users')->fields('users', array('uid'))->condition('uid', $account->uid, '<>')->condition('name', db_like($form_state['values']['name']), 'LIKE')->range(0, 1)->execute()->fetchField()) {
+        form_set_error('name', t('The name %name is already taken.', array('%name' => $form_state['values']['name'])));
+      }
+    }
+
+    // Trim whitespace from mail, to prevent confusing 'e-mail not valid'
+    // warnings often caused by cutting and pasting.
+    $mail = trim($form_state['values']['mail']);
+    form_set_value($form['account']['mail'], $mail, $form_state);
+
+    // Validate the e-mail address, and check if it is taken by an existing user.
+    if ($error = user_validate_mail($form_state['values']['mail'])) {
+      form_set_error('mail', $error);
+    }
+    elseif ((bool) db_select('users')->fields('users', array('uid'))->condition('uid', $account->uid, '<>')->condition('mail', db_like($form_state['values']['mail']), 'LIKE')->range(0, 1)->execute()->fetchField()) {
+      // Format error message dependent on whether the user is logged in or not.
+      if ($GLOBALS['user']->uid) {
+        form_set_error('mail', t('The e-mail address %email is already taken.', array('%email' => $form_state['values']['mail'])));
+      }
+      else {
+        form_set_error('mail', t('The e-mail address %email is already registered. <a href="@password">Have you forgotten your password?</a>', array('%email' => $form_state['values']['mail'], '@password' => url('user/password'))));
+      }
+    }
+
+    // Make sure the signature isn't longer than the size of the database field.
+    // Signatures are disabled by default, so make sure it exists first.
+    if (isset($form_state['values']['signature'])) {
+      // Move text format for user signature into 'signature_format'.
+      $form_state['values']['signature_format'] = $form_state['values']['signature']['format'];
+      // Move text value for user signature into 'signature'.
+      $form_state['values']['signature'] = $form_state['values']['signature']['value'];
+
+      $user_schema = drupal_get_schema('users');
+      if (drupal_strlen($form_state['values']['signature']) > $user_schema['fields']['signature']['length']) {
+        form_set_error('signature', t('The signature is too long: it must be %max characters or less.', array('%max' => $user_schema['fields']['signature']['length'])));
+      }
+    }
+  }
+}
+
+/**
+ * Verify the syntax of the given name.
+ *
+ * This is a copy from Drupal core function added the char "\" to allow SAML users to change their information in the
+ * profile.
+ */
+function loop_user_validate_name($name) {
+  if (!$name) {
+    return t('You must enter a username.');
+  }
+  if (substr($name, 0, 1) == ' ') {
+    return t('The username cannot begin with a space.');
+  }
+  if (substr($name, -1) == ' ') {
+    return t('The username cannot end with a space.');
+  }
+  if (strpos($name, '  ') !== FALSE) {
+    return t('The username cannot contain multiple spaces in a row.');
+  }
+  if (preg_match('/[^\x{80}-\x{F7} a-z0-9@_.\'-\\\\]/i', $name)) {
+    return t('The username contains an illegal character.');
+  }
+  if (preg_match('/[\x{80}-\x{A0}' .         // Non-printable ISO-8859-1 + NBSP
+    '\x{AD}' .                // Soft-hyphen
+    '\x{2000}-\x{200F}' .     // Various space characters
+    '\x{2028}-\x{202F}' .     // Bidirectional text overrides
+    '\x{205F}-\x{206F}' .     // Various text hinting characters
+    '\x{FEFF}' .              // Byte order mark
+    '\x{FF01}-\x{FF60}' .     // Full-width latin
+    '\x{FFF9}-\x{FFFD}' .     // Replacement characters
+    '\x{0}-\x{1F}]/u',        // NULL byte and control characters
+    $name)) {
+    return t('The username contains an illegal character.');
+  }
+  if (drupal_strlen($name) > USERNAME_MAX_LENGTH) {
+    return t('The username %name is too long: it must be %max characters or less.', array('%name' => $name, '%max' => USERNAME_MAX_LENGTH));
+  }
+}

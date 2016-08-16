@@ -1,0 +1,7 @@
+name = Loop configure theme
+description = Configurable styling
+core = 7.x
+package = Loop
+dependencies[] = style_settings
+features[features_api][] = api:2
+project path = profiles/loop/modules

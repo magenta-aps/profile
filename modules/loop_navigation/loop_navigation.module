@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Navigation feature.
+ */
+
+include_once 'loop_navigation.features.inc';

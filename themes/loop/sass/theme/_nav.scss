@@ -1,0 +1,371 @@
+/**
+ * Navigation
+ * This file includes multiple nesting elements. This is due to the fact that we use the same primary menu twice (Mobile and header.)
+ * We cannot affect the classes depending on context, so we nest instead.
+ */
+
+
+// We use the same menu as in mobile, where we just want ordinary links. This results in some needed nesting.
+.nav--wrapper{
+  position: absolute;
+  right: 1em;
+  bottom: 1.1em;
+
+  text-align: center;
+
+  @include breakpoint(35em) {
+    bottom: .85em;
+  }
+
+  @include breakpoint($breakpoint-4) {
+    bottom: 0;
+  }
+
+  .nav {
+    display: inline-block;
+
+    text-align: center;
+  }
+
+  .nav-dropdown--header,
+  .nav--toggle-mobile-nav,
+  .nav--link {
+    position: relative;
+
+    display: inline-block;
+    height: 2.75em;
+    margin-left: .7em;
+    width: 2.75em;
+
+    background-color: $green-light;
+    line-height: 2em;
+    text-align: center;
+
+    &:link,
+    &:visited {
+      color: $white;
+      text-decoration: none;
+    }
+
+    &:hover {
+      background-color: lighten($green-light, 10%);
+    }
+
+    &.active-trail,
+    &.active {
+      background-color: $gray-lightest;
+      color: $green;
+
+      &:hover {
+        background-color: $green-light;
+        color: $gray-lightest;
+      }
+    }
+
+    @include border-radius(100%);
+
+    @include breakpoint(35em) {
+      height: 3.25em;
+      margin-left: 1em;
+      width: 3.25em;
+
+      line-height: 2.35em;
+    }
+
+    @include breakpoint($breakpoint-4) {
+      padding-right: 1.25em;
+      padding-left: 1.25em;
+      height: auto;
+      width: auto;
+
+      line-height: 2.5em;
+
+      @include border-radius($border-radius $border-radius 0 0);
+    }
+  }
+
+  .nav--frontpage-link {
+    @extend .nav--link;
+    display:none;
+
+    @include breakpoint(50em) {
+      display: inline-block;
+    }
+  }
+
+  .nav--toggle-mobile-nav {
+    @include breakpoint(45em) {
+      display: inline-block;
+      min-height: 2.5em;
+      vertical-align: bottom;
+
+      .nav--icon {
+        position: relative;
+        top: .5em;
+
+        display: block;
+      }
+
+      .nav--text {
+        display: none;
+      }
+    }
+
+    @include breakpoint($layout-max-width) {
+      display: none;
+    }
+  }
+
+  .nav--logout {
+    @extend .nav--link;
+
+    display: none;
+
+    @include breakpoint(75em) {
+      display: inline-block;
+    }
+  }
+}
+
+
+.nav--icon {
+  max-width: 1.25em;
+
+  @include breakpoint(35em) {
+    max-width: 1.5em;
+  }
+
+  @include breakpoint($breakpoint-4) {
+    display: none;
+  }
+}
+
+.nav--text {
+  display: none;
+
+  @include breakpoint($breakpoint-4) {
+    display: inline;
+  }
+}
+
+
+/* Dropdown menu
+ * We use the same menu as in mobile, where we don't want any of this stuff. This results in some needed nesting.
+   ================================================================================================================== */
+
+.nav-dropdown {
+  display: none;
+
+  @include breakpoint($layout-max-width) {
+    display: inline-block;
+  }
+
+  .nav-dropdown--header {
+    padding-right: 2.5em;
+  }
+
+  .nav-dropdown--icon-white,
+  .nav-dropdown--icon-green {
+    position: absolute;
+    top: .85em;
+    right: 1em;
+
+    max-width: .85em;
+  }
+
+  .nav-dropdown--item {
+    position: absolute;
+    top: 2.5em;
+    right: 0;
+    z-index: 99;
+
+    display: none;
+    padding-top: .5em;
+    padding-right: 1.25em;
+    padding-left: 1.25em;
+
+    background-color: $green-light;
+    line-height: 2.5em;
+
+    @include border-radius(0 0 $border-radius $border-radius);
+  }
+
+  // Nesting because we use hover to show the sub menu.
+  .nav-dropdown--wrapper {
+    position: relative;
+
+    display: inline-block;
+
+    &:hover {
+      .nav-dropdown--item {
+        display: block;
+      }
+    }
+  }
+
+
+  // Control the arrow down icons with hover and active trail.
+
+  .nav-dropdown--header {
+    .nav-dropdown--icon-green {
+      display: none;
+    }
+
+    .nav-dropdown--icon-white {
+      display: block;
+    }
+  }
+
+  .nav-dropdown--header.active-trail {
+    .nav-dropdown--icon-green {
+      display: block;
+    }
+
+    .nav-dropdown--icon-white {
+      display: none;
+    }
+
+    &:hover {
+      .nav-dropdown--icon-green {
+        display: none;
+      }
+
+      .nav-dropdown--icon-white {
+        display: block;
+      }
+    }
+  }
+
+
+  .nav-dropdown--link {
+    border-bottom: 1px solid lighten($green-light, 10%);
+    margin-bottom: .5em;
+    padding-bottom: .5em;
+
+    display: block;
+    min-width: 10em;
+
+    text-align: right;
+
+    &:link,
+    &:visited {
+      color: $white;
+      text-decoration: none;
+    }
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:last-child {
+      border: 0;
+      margin-bottom: 0;
+    }
+
+    &.active {
+      text-decoration: underline;
+    }
+  }
+}
+
+
+
+
+/* Mobile navigation
+ *
+ * See specific IE9 styles in separate stylesheet
+ * We use the same menu as in the header, and thus the same html. This results in some needed nesting.
+ *
+   ================================================================================================================== */
+
+.nav-mobile {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: auto;
+  z-index: 99;
+
+  padding: 1.5em;
+  height: 100%;
+  width: 76%;
+
+  background-color: $green;
+
+  @include box-sizing(border-box);
+  @include box-shadow(5px 0 8px darken($green, 10%) inset);
+  @include transform(translate3d(100%, 0, 0));
+  @include backface-visibility(hidden);
+
+  a {
+    &:link {
+      color: $white;
+      text-decoration: none;
+    }
+
+    &:visited {
+      color: $white;
+    }
+
+    &:hover {
+      color: $white;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      color: $white;
+    }
+  }
+
+  .nav--link,
+  .nav-dropdown--header,
+  .nav-dropdown--link {
+    @include element-spacing(1em);
+
+    border-bottom-color: $green-light;
+
+    display: block;
+
+    &:before {
+      @extend %icon-arrow-right-medium;
+      @extend %icon-before;
+    }
+  }
+
+  .nav-dropdown--icon-white,
+  .nav-dropdown--icon-green {
+    display: none;
+  }
+
+  .nav-dropdown--item {
+    padding-left: 1.25em;
+  }
+
+  .nav--text {
+    display: inline-block;
+  }
+
+  .nav-dropdown--icon {
+    display: none;
+  }
+
+  // User private menu mobile.
+  .nav-mobile--user-links {
+    padding: 1em 0;
+  }
+
+  .block-module--user-links-list {
+    padding-left: 0;
+  }
+
+  .nav-mobile--links-header {
+    color: #fff;
+    font-size: 130%;
+    font-weight: bold;
+  }
+
+  .nav--logout {
+    @extend .nav--link;
+  }
+}
+

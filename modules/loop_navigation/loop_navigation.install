@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * Implements hook_disable().
+ */
+function loop_navigation_disable() {
+  // Delete link to menu when feature is disabled.
+  $mlid = db_select('menu_links', 'ml')
+    ->condition('ml.link_path', '<nolink>')
+    ->condition('ml.menu_name', 'main-menu')
+    ->fields('ml', array('mlid'))
+    ->execute()
+    ->fetchField();
+  menu_link_delete($mlid);
+
+  // Delete the menu that he feature provide.
+  menu_delete(array('menu_name' => 'menu-loop-primary-menu'));
+}

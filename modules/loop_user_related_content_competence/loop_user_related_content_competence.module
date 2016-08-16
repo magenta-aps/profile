@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user related content competence feature.
+ */
+
+include_once 'loop_user_related_content_competence.features.inc';

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Frontpage feature.
+ */
+
+include_once 'loop_frontpage.features.inc';

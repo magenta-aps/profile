@@ -1,0 +1,105 @@
+/**
+ * Messages
+ *
+ * @author magnify
+ */
+
+.messages {
+  margin-bottom: $margin-bottom;
+  padding: 1.5em;
+
+  @include border-radius($border-radius);
+
+  ul {
+    display: inline-block;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-left: 0;
+
+    list-style: none;
+  }
+
+  &:before {
+    font-size: 150%;
+    vertical-align: top;
+  }
+
+  &.status {
+    background-color: $green-lighter;
+    color: $black;
+
+    a {
+      &:link {
+        color: $black;
+        text-decoration: underline;
+      }
+
+      &:visited,
+      &:hover,
+      &:focus {
+        color: $black;
+        text-decoration: none;
+      }
+    }
+
+    &:before {
+      @extend %icon-check-circled;
+      @extend %icon-before;
+
+      margin-right: .5em;
+    }
+  }
+
+  &.warning {
+    background-color: $yellow-light;
+    color: $black;
+
+    a {
+      &:link {
+        color: $black;
+        text-decoration: underline;
+      }
+
+      &:visited,
+      &:hover,
+      &:focus {
+        color: $black;
+        text-decoration: none;
+      }
+
+    }
+
+    &:before {
+      @extend %icon-attention;
+      @extend %icon-before;
+
+      margin-right: .5em;
+    }
+  }
+
+  &.error {
+    background-color: darken($red, 15%);
+    color: $white;
+
+    a {
+      &:link {
+        color: $white;
+        text-decoration: underline;
+      }
+
+      &:visited,
+      &:hover,
+      &:focus {
+        color: $white;
+        text-decoration: none;
+      }
+    }
+
+    &:before {
+      @extend %icon-cancel;
+      @extend %icon-before;
+
+      margin-right: .5em;
+    }
+  }
+}

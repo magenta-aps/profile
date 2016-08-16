@@ -1,0 +1,84 @@
+<?php
+/**
+ * @file
+ * Code for the Loop external sources content feature.
+ */
+
+include_once 'loop_external_sources_content.features.inc';
+
+/**
+ * Implements hook_init().
+ *
+ * Include search JS for every page load.
+ */
+function loop_external_sources_content_init() {
+  // Check if it's a registered user.
+  if (user_is_logged_in()) {
+    drupal_add_js(drupal_get_path('module', 'loop_external_sources_content') . '/js/search.js');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function loop_external_sources_content_menu() {
+  $items['loop_search_nodes'] = array(
+    'title' => 'List nodes in JSON format',
+    'page callback' => 'loop_search_nodes',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  $items['loop_external_sources/%'] = array(
+    'title' => 'List external sources in JSON format',
+    'page callback' => 'loop_external_sources_content_documents',
+    'page arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Find external sources and output as JSON.
+ *
+ * @param string $scope
+ *   Comma separated list to search for.
+ */
+function loop_external_sources_content_documents($scope) {
+  // Explode to array.
+  $titles = explode(',', $scope);
+
+  // Title filter.
+  $or = db_or();
+  foreach ($titles as $title) {
+    $or->condition("title", $title . "%", 'LIKE');
+  }
+
+  // Fetch node ID and title.
+  $nodes = db_query("
+    SELECT node.nid, node.title, field_data_field_external_link.field_external_link_url
+    FROM node
+    INNER JOIN field_data_field_external_link
+    ON node.nid=field_data_field_external_link.entity_id
+    WHERE node.type = 'external_sources' AND  node.status = 1
+    ")->fetchAll();
+
+  $data = array();
+  foreach ($nodes as $node) {
+    // Get path.
+    $path = link_cleanup_url($node->field_external_link_url);
+    $data[] = array(
+      // For better search, use strtolower().
+      'value' => strtolower(trim(trim($node->title), '"')),
+      // Fine human output.
+      'title' => trim($node->title),
+      // Use internal path.
+      'link' => $path,
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}

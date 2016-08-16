@@ -1,0 +1,46 @@
+/**
+ * Active Tags module
+ *
+ * https://drupal.org/project/active_tags
+ *
+ * @author magnify
+ */
+
+
+
+.at-term-list {
+  margin-bottom: .25em;
+}
+
+.at-term {
+  @extend %tag;
+
+  &:after {
+    @extend %icon-cancel;
+    @extend %icon-after;
+  }
+}
+
+.at-term-entry {
+  margin-bottom: .5em;
+}
+
+.at-add-btn {
+  @extend %button;
+
+  padding: .25em .75em;
+  width: 100%;
+
+  background-color: $gray-darker;
+  border: 1px solid $gray-darkest;
+  color: $white;
+  font-size: 100%;
+
+  &:hover {
+    background-color: $gray-darkest;
+  }
+
+  @include breakpoint(30em) {
+    width: auto;
+  }
+}

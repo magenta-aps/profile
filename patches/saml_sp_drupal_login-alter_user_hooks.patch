@@ -1,0 +1,24 @@
+diff --git a/modules/saml_sp_drupal_login/saml_sp_drupal_login.module b/modules/saml_sp_drupal_login/saml_sp_drupal_login.module
+index f73ba86..dac6b89 100644
+--- a/modules/saml_sp_drupal_login/saml_sp_drupal_login.module
++++ b/modules/saml_sp_drupal_login/saml_sp_drupal_login.module
+@@ -181,6 +181,9 @@ function saml_sp_drupal_login__saml_authenticate($is_valid, saml_sp_Response $sa
+         $wrapper->language->set($language);
+         $wrapper->save();
+       }
++
++      // Invoke hook_saml_sp_post_update_user_alter().
++      drupal_alter('saml_sp_post_update_user', $account, $attributes);
+     }
+     else if (variable_get('user_register', USER_REGISTER_ADMINISTRATORS_ONLY) != USER_REGISTER_ADMINISTRATORS_ONLY) {
+       // New user, register.
+@@ -197,6 +200,9 @@ function saml_sp_drupal_login__saml_authenticate($is_valid, saml_sp_Response $sa
+       $wrapper->field_nameid->set($name_id);
+       $wrapper->save();
+       watchdog('saml_sp', 'New SSO user account for %mail with UID %uid' , array('%mail' => $email, '%uid' => $account->uid));
++
++      // Invoke hook_saml_sp_post_create_user_alter().
++      drupal_alter('saml_sp_post_create_user', $account, $attributes);
+     }
+     else if (variable_get('saml_sp_drupal_login__no_account_authenticated_user_role', FALSE) && variable_get('saml_sp_drupal_login__no_account_authenticated_user_account', FALSE)) {
+       // the user has no account but the setting allows for them to get an authenticated role

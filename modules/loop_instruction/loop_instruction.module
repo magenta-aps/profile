@@ -1,0 +1,70 @@
+<?php
+
+include_once 'loop_instruction.features.inc';
+
+
+/**
+ * @file
+ * Code for the Loop instruction feature.
+ */
+
+/**
+ * Implements hook_init().
+ *
+ * Include search JS for every page load.
+ */
+function loop_instruction_init() {
+  // Check if it's a registered user.
+  if (user_is_logged_in()) {
+    drupal_add_js(drupal_get_path('module', 'loop_instruction') . '/js/search.js');
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function loop_instruction_menu() {
+  $items = array();
+
+  $items['loop_instruction'] = array(
+    'title' => 'List instruction in JSON format',
+    'page callback' => 'loop_instruction_documents',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Find external sources and output as JSON.
+ *
+ * @param string $scope
+ *   Comma separated list to search for.
+ */
+function loop_instruction_documents() {
+  // Select nodes.
+  $nodes = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('status', 1)
+    ->condition('type', 'instruction')
+    ->execute();
+
+  // Build nodes.
+  $data = array();
+  foreach ($nodes as $node) {
+    $data[] = array(
+      // For better search, use strtolower.
+      'value' => strtolower(trim(trim($node->title), '"')),
+      // Fine human output.
+      'title' => trim($node->title),
+      // Use internal path.
+      'link' => '/' . drupal_get_path_alias('node/' . $node->nid),
+      // Node ID.
+      'id' => $node->nid,
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
