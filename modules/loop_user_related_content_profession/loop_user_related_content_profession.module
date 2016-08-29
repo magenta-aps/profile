@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user related content  profession feature.
+ */
+
+include_once 'loop_user_related_content_profession.features.inc';

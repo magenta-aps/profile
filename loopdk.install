@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Install, update and uninstall functions for the LOOP installation profile.
+ * Install, update and uninstall functions for the Loop installation profile.
  */
 
 /**
@@ -107,4 +107,3 @@ function loopdk_access_denied_page() {
   // Set the 404 page.
   variable_set('site_403', 'access_denied');
 }
-

@@ -1,0 +1,7 @@
+name = Loop SimpleSAMLphp
+description = SAML functionality based on SimpleSAMLphp
+core = 7.x
+package = Loop
+version = 7.x-1.0
+project = loop_simplesamlphp
+dependencies[] = simplesamlphp_auth

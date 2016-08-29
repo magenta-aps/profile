@@ -1,0 +1,82 @@
+@mixin custom-menu-links($color) {
+  a {
+    &:before {
+      @extend %icon-arrow-right-medium;
+      @extend %icon-before;
+    }
+
+    &:link {
+      color: $color;
+      text-decoration: none;
+    }
+
+    &:visited {
+      color: $color;
+    }
+
+    &:hover {
+      color: $color;
+      text-decoration: underline;
+    }
+
+    &:focus {
+      color: $color;
+    }
+  }
+}
+
+@mixin element-spacing($amount) {
+  border-bottom: 1px solid $border-color;
+  margin-bottom: $amount;
+  padding-bottom: $amount;
+}
+
+@mixin reset-element-spacing() {
+  border-bottom: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+@mixin custom-links($color, $active-color, $hover:$color) {
+  a {
+    &:link {
+      color: $color;
+      text-decoration: none;
+    }
+
+    &:visited {
+      color: $color;
+    }
+
+    &:hover {
+      color: $hover;
+    }
+
+    &:focus {
+      color: $color;
+    }
+
+    &.is-active {
+      &:link {
+        color: $active-color;
+        text-decoration: none;
+      }
+
+      &:visited {
+        color: $active-color;
+      }
+
+      &:hover {
+        color: $active-color;
+      }
+
+      &:focus {
+        color: $active-color;
+      }
+    }
+
+    &.is-hidden {
+      display: none;
+    }
+  }
+}

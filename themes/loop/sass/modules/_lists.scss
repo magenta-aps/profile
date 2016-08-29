@@ -1,0 +1,73 @@
+/**
+ *
+ * Lists
+ *
+ */
+
+.content-list {
+  padding-left: 0;
+
+  color: $gray-dark;
+  list-style: none;
+}
+
+.content-list--item {
+  @extend %basic-element-styling;
+
+  background-color: $gray-lighter;
+
+  &.is-last {
+    margin-bottom: 0;
+  }
+}
+
+
+/* We use the default pager list html Auch!! */
+.pager {
+  list-style-type: none;
+  padding: 0;
+  overflow: hidden;
+  text-align: center;
+
+  li {
+    display: inline;
+  }
+
+  a {
+    padding: 1em;
+    line-height: 2.5em;
+    background: $gray-lightest;
+    text-decoration: none;
+  }
+
+  .pager-current {
+    background: $gray-light;
+    padding: 1em;
+    line-height: 2.5em;
+  }
+}
+
+
+// A simple list used with @extend across the site
+
+%simple-list--header {
+  font-weight: bold;
+
+  @include element-spacing(.5em);
+}
+
+%simple-list--item {
+  line-height: 1.75em;
+
+  @include element-spacing(1em);
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+%simple-list--text {
+  display: block;
+  margin-bottom: 0;
+  padding-right: 1.75em;
+}

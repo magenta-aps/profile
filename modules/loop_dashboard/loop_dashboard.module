@@ -1,0 +1,329 @@
+<?php
+/**
+ * @file
+ * Code for the Loop editor pages feature.
+ */
+
+include_once 'loop_dashboard.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function loop_dashboard_menu() {
+  $items = array();
+
+  $items['editor/dashboard/questions'] = array(
+    'title' => 'All questions',
+    'page callback' => 'loop_dashboard_all_questions',
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer nodes'),
+    'weight' => -50,
+  );
+  $items['editor/dashboard/replies'] = array(
+    'title' => 'All replies',
+    'page callback' => 'loop_dashboard_all_replies',
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer nodes'),
+    'weight' => -49,
+  );
+  $items['editor/dashboard/other_content'] = array(
+    'title' => 'All other content',
+    'page callback' => 'loop_dashboard_all_other_content',
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer nodes'),
+    'weight' => -48,
+  );
+  $items['editor/dashboard/abuse'] = array(
+    'title' => 'Abuse',
+    'page callback' => 'drupal_goto',
+    'page arguments' => array('admin/content/abuse'),
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer nodes'),
+    'weight' => -47,
+  );
+
+  $items['loop_dashboard_search_questions'] = array(
+    'title' => 'List nodes in JSON format',
+    'page callback' => 'loop_dashboard_questions',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  $items['loop_dashboard_search_comments'] = array(
+    'title' => 'List nodes in JSON format',
+    'page callback' => 'loop_dashboard_comments',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  $items['loop_dashboard_search_other_content'] = array(
+    'title' => 'List nodes in JSON format',
+    'page callback' => 'loop_dashboard_other_content',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Returns the "all questions" page.
+ */
+function loop_dashboard_all_questions() {
+  drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_all_questions.js');
+  return array('#theme' => 'loop_dashboard_all_questions');
+}
+
+/**
+ * Returns the "all replies" page.
+ */
+function loop_dashboard_all_replies() {
+  drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_all_comments.js');
+  return array('#theme' => 'loop_dashboard_all_comments');
+}
+
+/**
+ * Returns the "all other content" page.
+ */
+function loop_dashboard_all_other_content() {
+  drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_all_other_content.js');
+  return array('#theme' => 'loop_dashboard_all_other_content');
+}
+
+/**
+ * Return every node of type post in JSON format.
+ *
+ * Outputs JSON object.
+ */
+function loop_dashboard_questions() {
+  // Select nodes.
+  $nodes = db_select('node', 'n')
+    ->fields('n', array('nid', 'title', 'created', 'uid'))
+    ->condition('status', 1)
+    ->condition('type', 'post')
+    ->execute();
+
+  // Build nodes.
+  $data = array();
+  foreach ($nodes as $node) {
+    $comments = db_select('comment', 'c')
+      ->fields('c')
+      ->condition('nid', $node->nid)
+      ->execute();
+    $num_of_results = $comments->rowCount();
+
+    $data[] = array(
+      'title' => trim($node->title),
+      'nid' => $node->nid,
+      'date' => format_date($node->created, 'medium'),
+      'coms' => $num_of_results,
+      'ts' => $node->created,
+      'uid' => $node->uid,
+      'full_name' => _loop_dashboard_fetch_full_name($node->uid),
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Return every comment of type post in JSON format.
+ *
+ * Outputs JSON object.
+ */
+function loop_dashboard_comments() {
+  // Select nodes.
+  $comments = db_select('comment', 'c');
+  $comments->leftJoin('node', 'n', 'c.nid = n.nid');
+  $comments->leftJoin('field_data_field_user_image', 'i', 'c.uid = i.entity_id');
+  $comments->leftJoin('file_managed', 'f', 'f.fid = i.field_user_image_fid');
+  $comments->fields('n', array('title'))
+    ->fields('c', array('cid', 'nid', 'subject', 'created', 'uid'))
+    ->fields('f', array('uri'))
+    ->condition('c.status', 1);
+
+  $comments = $comments->execute();
+
+  // Build nodes.
+  $data = array();
+  foreach ($comments as $comment) {
+    $uri = $comment->uri;
+
+    if (is_null($uri)) {
+      $public_uri = 'public://';
+      $path = file_create_url($public_uri);
+      $uri = $path . 'default-user-icon.png';
+    }
+    else {
+      $uri = image_style_url('profile', $comment->uri);
+    }
+
+    $data[] = array(
+      'subject' => trim($comment->subject),
+      'cid' => $comment->cid,
+      'date' => format_date($comment->created, 'medium'),
+      'ts' => $comment->created,
+      'nid' => $comment->nid,
+      'uri' => $uri,
+      'uid' => $comment->uid,
+      'content-title' => $comment->title,
+      'full_name' => _loop_dashboard_fetch_full_name($comment->uid),
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Return every comment of type post in JSON format.
+ *
+ * Outputs JSON object.
+ */
+function loop_dashboard_other_content() {
+  // Select nodes.
+  $nodes = db_select('node', 'n')
+    ->fields('n', array('nid', 'title', 'created', 'uid'))
+    ->condition('status', 1)
+    ->condition('type', 'post', '<>')
+    ->condition('type', 'page', '<>')
+    ->execute();
+
+  // Build nodes.
+  $data = array();
+  foreach ($nodes as $node) {
+    $data[] = array(
+      'title' => trim($node->title),
+      'nid' => $node->nid,
+      'date' => format_date($node->created, 'medium'),
+      'ts' => $node->created,
+      'uid' => $node->uid,
+      'full_name' => _loop_dashboard_fetch_full_name($node->uid),
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function loop_dashboard_block_info() {
+  return array(
+    'loop_dashboard_questions' => array(
+      'info' => t('Dashboard questions'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+    'loop_dashboard_comments' => array(
+      'info' => t('Dashboard comments'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+    'loop_dashboard_other_content' => array(
+      'info' => t('Dashboard other content'),
+      'cache' => DRUPAL_CACHE_PER_PAGE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function loop_dashboard_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'loop_dashboard_questions':
+      $block['content'] = array('#theme' => 'loop_dashboard_questions');
+      drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_questions.js');
+      break;
+
+    case 'loop_dashboard_comments':
+      $block['content'] = array('#theme' => 'loop_dashboard_comments');
+      drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_comments.js');
+      break;
+
+    case 'loop_dashboard_other_content':
+      $block['content'] = array('#theme' => 'loop_dashboard_other_content');
+      drupal_add_js(drupal_get_path('module', 'loop_dashboard') . '/js/dashboard_other_content.js');
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_dashboard_theme() {
+  return array(
+    'loop_dashboard_questions' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--questions',
+    ),
+    'loop_dashboard_comments' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--comments',
+    ),
+    'loop_dashboard_other_content' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--other-content',
+    ),
+    'loop_dashboard_all_questions' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--all-questions',
+    ),
+    'loop_dashboard_all_comments' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--all-comments',
+    ),
+    'loop_dashboard_all_other_content' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-dashboard--all-other-content',
+    ),
+  );
+}
+
+/**
+ * Get the users full name.
+ *
+ * @param string $uid
+ *   The drupal user id.
+ *
+ * @return string
+ *   The users full name.
+ */
+function _loop_dashboard_fetch_full_name($uid) {
+  $name = '';
+
+  // Make sure field tables exist.
+  if (module_exists('loop_user')) {
+    $first_name = db_select('field_data_field_first_name', 'f')
+      ->fields('f')
+      ->condition('entity_id', $uid)
+      ->execute()
+      ->fetchAssoc();
+
+    $last_name = db_select('field_data_field_last_name', 'f')
+      ->fields('f')
+      ->condition('entity_id', $uid)
+      ->execute()
+      ->fetchAssoc();
+
+    $name = $first_name['field_first_name_value'] . ' ' . $last_name['field_last_name_value'];
+  }
+
+  return $name;
+}
+
+/**
+ * Implements hook_menu_link_alter().
+ *
+ * Makes Dashboard menu item show as expanded.
+ */
+function loop_dashboard_menu_link_alter(&$item) {
+  if ($item['link_path'] == 'editor/dashboard') {
+    $item['expanded'] = TRUE;
+  }
+}

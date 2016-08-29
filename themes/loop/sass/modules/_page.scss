@@ -1,0 +1,36 @@
+/**
+ * Page module
+ *
+ * @author magnify
+ */
+
+
+.page-wrapper {
+  position: relative;
+
+  width: 100%;
+
+  &.is-moved-left {
+    .page-inner {
+      @include transform(translate3d(-76%, 0, 0));
+    }
+  }
+}
+
+.page-inner {
+  position: relative;
+
+  min-height: 100%;
+  width: 100%;
+
+  @include transition(transform 500ms ease 0s);
+}
+
+.page-title {
+  font-size: 200%;
+  font-weight: bold;
+}
+
+.page-title--edit-link {
+  font-size: 0.7em;
+}

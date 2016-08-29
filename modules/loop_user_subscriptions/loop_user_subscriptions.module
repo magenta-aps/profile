@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user subscriptions feature.
+ */
+
+include_once 'loop_user_subscriptions.features.inc';

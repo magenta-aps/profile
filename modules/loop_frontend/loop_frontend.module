@@ -1,0 +1,47 @@
+<?php
+/**
+ * @file
+ * Code for the Loop frontend module.
+ */
+
+include_once 'loop_frontend.features.inc';
+
+/**
+ * Implements template_preprocess_html().
+ */
+function loop_frontend_preprocess_html(&$variables) {
+  // Load Respond.js library.
+  drupal_add_js(loop_frontend_get_library_file('respondjs', 'respond.min.js'), array(
+    'type' => 'external',
+    'scope' => 'header',
+    'group' => JS_LIBRARY,
+    'preprocess' => FALSE,
+    'every_page' => TRUE,
+    'weight' => -997,
+  ));
+}
+
+/**
+ * Helper function gets the path to a libraries file.
+ *
+ * @param string $libpath
+ *   The name of library path.
+ * @param string $libfile
+ *   The filename of the library.
+ *
+ * @return string
+ *   The full path to external library.
+ */
+function loop_frontend_get_library_file($libpath, $libfile) {
+  // If Libraries API is enabled,
+  // make sure the file exists before pointing there.
+  if (function_exists('libraries_get_path') && file_exists(libraries_get_path($libpath))) {
+    $path = '/' . libraries_get_path($libpath);
+    $path .= '/' . $libfile;
+  }
+  else {
+    $path = NULL;
+  }
+
+  return $path;
+}

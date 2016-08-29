@@ -1,0 +1,29 @@
+<?php
+/**
+ * @file
+ * Handles updates.
+ */
+
+/**
+ * Implements hook_install().
+ *
+ * Update the module's weight so it runs after saml_sp_drupal_login.
+ */
+function loop_saml_install() {
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('name', 'loop_saml', '=')
+    ->execute();
+}
+
+/**
+ * Implements hook_update().
+ *
+ * Update the module's weight so it runs after saml_sp_drupal_login.
+ */
+function loop_saml_update_7001() {
+  db_update('system')
+    ->fields(array('weight' => 1))
+    ->condition('name', 'loop_saml', '=')
+    ->execute();
+}

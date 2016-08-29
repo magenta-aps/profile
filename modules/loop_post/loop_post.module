@@ -1,0 +1,45 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Post feature.
+ */
+
+include_once 'loop_post.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Sets the profession field to the same as the current user.
+ * Figure out if profession is linked to a subject, set it as default.
+ */
+function loop_post_form_node_form_alter(&$form, &$form_state) {
+  if ($form['type']['#value'] == 'post') {
+    global $user;
+    $field_description_language = $form['field_description']['#language'];
+    $form['field_description'][$field_description_language]['0']['#format'] = 'simple';
+
+    // We need the field_profession field, so lets fire up user_load!
+    $account = user_load($user->uid);
+
+    // Fetch profession field from user.
+    $fetched_field_profession = field_get_items('user', $account, 'field_profession');
+
+    // Set up profession field.
+    if ($fetched_field_profession) {
+      if (arg(1) == 'add') {
+        $form['field_profession'][LANGUAGE_NONE]['#default_value'] = array(0 => $fetched_field_profession['0']['tid']);
+      }
+    }
+
+    // Add js chosen class to profession field. (Chosen jquery added in theme).
+    $field_profession_lang = $form['field_profession']['#language'];
+    $form['field_profession'][$field_profession_lang]['#attributes']['class'][] = 'js-chosen-select-profession';
+
+    // Move description inside wrapper.
+    unset($form['field_description']['#attributes']['class']);
+    $form['field_description']['und']['#prefix'] = '<div id="field-description-add-more-wrapper" class="description-form-element form-item">';
+
+    // Set page title.
+    drupal_set_title(t("Create question"));
+  }
+}

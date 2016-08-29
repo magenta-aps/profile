@@ -1,0 +1,310 @@
+/**
+ * Forms
+ *
+ * @author magnify
+ */
+
+
+
+/* Basic styling
+   ================================================================================================================== */
+
+input,
+textarea {
+  font: $font;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="date"],
+input[type="datetime"],
+input[type="email"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+input[type="time"],
+input[type="url"],
+textarea {
+  border: 1px solid $gray-light;
+  display: block;
+  min-height: 1.25em;
+  width: 100%;
+  padding: .75em;
+
+  color: $gray-darker;
+  background-color: darken($white, 5%);
+
+  &:focus {
+    border: 1px solid $gray-dark;
+
+    color: $gray-darkest;
+  }
+
+  &[disabled] {
+    @include box-shadow(0 0 0);
+
+    border: 1px solid $gray-light;
+    color: $gray;
+
+    background-color: lighten($gray-light, 10%);
+  }
+
+  @include border-radius($border-radius);
+  @include box-sizing(border-box);
+}
+
+
+
+/* Labels
+   ================================================================================================================== */
+
+label {
+  margin-bottom: .25em;
+
+  /* Move labels so they align better with fields when using rounded corners */
+  margin-left: .2em;
+
+  color: $gray-dark;
+}
+
+
+/* Form elements
+ *
+ * Based on Drupal's form markup, guidelines are not used
+ *
+   ================================================================================================================== */
+
+.form-module {
+  clear: both;
+
+  // Not pretty, but much, much easier!
+  .filter-wrapper {
+    display: none;
+  }
+}
+
+.form-wrapper {
+  margin-bottom: 1.5em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-item {
+  margin-bottom: 1.5em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  // Too comprehensive to change the class so we nest instead
+  .description {
+    padding-top: .5em;
+
+    color: $gray;
+  }
+}
+
+.form-type-textarea,
+.form-type-select,
+.form-type-autocomplete-deluxe {
+  border: 1px solid $gray-lightest;
+  margin-bottom: $margin-bottom;
+  padding: 1em;
+
+  @include border-radius($border-radius);
+}
+
+// Drupal default description text area acts up in the html. So we step in.
+
+.description-form-element {
+  @extend .form-type-textarea;
+
+  .form-item {
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .filter-wrapper {
+    display: none;
+  }
+}
+
+.form-required {
+  color: $red;
+}
+
+.form-select {
+  border: 1px solid $gray-light;
+  padding: .75em;
+  width: 100%;
+  
+  /* For Chrome */
+  height: 3em;
+
+  background-color: darken($white, 5%);
+
+  @include border-radius($border-radius);
+  @include box-sizing(border-box);
+}
+
+.form-textarea-question {
+  height: 6em;
+
+  @include breakpoint(30em) {
+    height: 3.25em;
+  }
+}
+
+.form-actions {
+  text-align: right;
+}
+
+.form-submit {
+  @extend .button--action;
+
+  width: 100%;
+
+  @include breakpoint(30em) {
+    width: auto;
+  }
+}
+
+.field-group-fieldset {
+  border: 1px solid $gray-lighter;
+  margin-bottom: 2em;
+  padding-bottom: 1em;
+  padding-left: 1em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @include border-radius($border-radius);
+}
+
+.fieldset-legend {
+  padding-right: .5em;
+  padding-left: .5em;
+
+  font-size: 125%;
+}
+
+
+// Views bulk operations need specific form styling.
+.vbo-views-form {
+  .form-item {
+    border: 0;
+    margin-bottom: 0;
+    padding: 0;
+  }
+
+  .vbo-fieldset-select-all {
+    border: 0;
+    padding: 0 0 2em;
+    margin: 0;
+    width: auto;
+
+    label {
+      text-align: left;
+    }
+  }
+
+  .user-profile-module--field {
+    overflow: hidden;
+  }
+
+  .user-profile--notification-label {
+    float: left;
+    width: 90%;
+  }
+
+  .profile--notification-action {
+    float: right;
+  }
+
+  .form-checkbox {
+    float:right;
+    margin: 0.4em 0 0 0.5em;
+  }
+
+  .form-item-operation {
+    width: 100%;
+    display: block;
+    padding-bottom: 1em;
+
+    @include breakpoint(50em) {
+      float: left;
+      width: 60%;
+      padding-right: 1em;
+      padding-bottom: 0;
+    }
+  }
+}
+
+// User profile form styling.
+// We nest it all inside the user profile form class.
+.user-profile-form {
+  .form-type-select {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  // We use ID since it's the only unique identifier, and the html is ajax generated through core.
+
+  #edit-field-user-image-und-0-upload-button {
+    @extend .button--neutral;
+    display: block;
+    margin: 1em auto;
+    width: 8em;
+  }
+
+  #edit-field-user-image-und-0-remove-button {
+    background-color: #ff6138;
+    border: 1px solid #ff3905;
+    color: white;
+    text-shadow: 1px 1px 0 #d12b00;
+
+    display: block;
+    margin: 1em auto;
+    width: 8em;
+  }
+
+  // We hide through styling since the html is generated through ajax in core.
+  .file,
+  .file-size {
+    display: none;
+  }
+
+  .form-file {
+    display: block;
+    margin-bottom: 1em;
+    width: 13em;
+  }
+
+  .image-preview {
+    margin: 0 auto;
+    width: 192px;
+  }
+
+
+  @include breakpoint(45em) {
+    .image-preview,
+    #edit-field-user-image-und-0-upload,
+    #edit-field-user-image-und-0-remove {
+      float: left;
+    }
+
+
+    #edit-field-user-image-und-0-upload-button,
+    #edit-field-user-image-und-0-remove-button {
+      position: relative;
+      margin: 0;
+      float: right;
+      overflow: hidden;
+    }
+  }
+}

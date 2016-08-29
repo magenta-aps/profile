@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Notification feature.
+ */
+
+include_once 'loop_notification.features.inc';

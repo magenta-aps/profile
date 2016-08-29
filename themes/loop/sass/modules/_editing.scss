@@ -1,0 +1,26 @@
+/**
+ *
+ * Editing
+ *
+ */
+
+.editing--block {
+  margin-bottom: 2em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.editing--row {
+  @include element-spacing(1em);
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.editing--edit-link {
+  font-size: 0.8em;
+  float: right;
+}

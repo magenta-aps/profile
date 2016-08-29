@@ -1,0 +1,79 @@
+/**
+ *
+ * Search module
+ *
+ */
+
+
+
+/* Search result
+   ========================================================================== */
+
+.search-result--item {
+  @include element-spacing(1em);
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.search-result--link {
+  display: block;
+  margin-bottom: .5em;
+
+  &:link,
+  &:visited {
+    text-decoration: none;
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+}
+
+
+.search-result--lead {
+  margin-bottom: 2em;
+}
+
+
+.search-result--comments {
+  display: block;
+
+  &:link,
+  &:visited {
+    color: $gray-dark;
+    text-decoration: none;
+  }
+
+  &:hover,
+  &:active {
+    color: $gray-darkest;
+  }
+
+  &:before {
+    @extend %icon-comment;
+    @extend %icon-before;
+  }
+}
+
+
+.search-result--meta-data {
+  margin-bottom: $margin-bottom;
+  padding: .5em 1.25em .65em;
+
+  background-color: $gray-background;
+  color: $gray-color;
+  font-size: 80%;
+
+  @include border-radius($border-radius);
+
+  @include breakpoint(51em) {
+    float: right;
+  }
+}
+
+.search-result--meta-data-date {
+  min-width: 13em;
+}

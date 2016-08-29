@@ -1,0 +1,15 @@
+<?php
+/**
+ * @file
+ * Handles updates.
+ */
+
+/**
+ * Remove Profession field from External Sources Content.
+ */
+function loop_external_sources_content_update_7001() {
+  $instance = field_info_instance('node', 'field_profession', 'external_sources');
+  if ($instance) {
+    field_delete_instance($instance);
+  }
+}

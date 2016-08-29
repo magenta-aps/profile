@@ -24,12 +24,10 @@ function loopdk_locale_selection(&$install_state) {
  *
  * Set site name, country and timezone.
  */
-if (!function_exists("system_form_install_configure_form_alter")) {
-  function system_form_install_configure_form_alter(&$form, $form_state) {
-    $form['site_information']['site_name']['#default_value'] = 'LOOP';
-    $form['server_settings']['site_default_country']['#default_value'] = 'DK';
-    $form['server_settings']['date_default_timezone']['#default_value'] = 'Europe/Copenhagen';
-  }
+function loopdk_form_install_configure_form_alter(&$form, $form_state) {
+  $form['site_information']['site_name']['#default_value'] = 'Loop';
+  $form['server_settings']['site_default_country']['#default_value'] = 'DK';
+  $form['server_settings']['date_default_timezone']['#default_value'] = 'Europe/Copenhagen';
 }
 
 /**
@@ -46,28 +44,37 @@ function loopdk_module_selection_form($form, &$form_state) {
     '#collapsed' => FALSE,
   );
 
-  $form['addons']['dashboard'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Admin dashboard'),
-    '#description' => t('Include admin dashboard.'),
-    '#default_value' => FALSE,
-    '#weight' => 1,
-  );
-
   $form['addons']['user_pages'] = array(
     '#type' => 'checkbox',
     '#title' => t('User pages'),
     '#description' => t('Include user display and user sub pages.'),
-    '#default_value' => FALSE,
-    '#weight' => 10,
+    '#default_value' => TRUE,
   );
+
+  $all_modules = system_rebuild_module_data();
+  // Additional Loop modules to suggest installing
+  //   module name => install (default checkbox value)
+  $loop_modules = array(
+    'loop_configure_theme' => FALSE,
+    'loop_post_wysiwyg' => FALSE,
+  );
+  foreach ($loop_modules as $module => $install) {
+    if (isset($all_modules[$module])) {
+      $module_info = $all_modules[$module]->info;
+      $form['addons'][$module] = array(
+        '#type' => 'checkbox',
+        '#title' => $module_info['name'],
+        '#description' => $module_info['description'],
+        '#default_value' => $install,
+      );
+    }
+  }
 
   $form['addons']['translation'] = array(
     '#type' => 'checkbox',
     '#title' => t('Danish translation'),
     '#description' => t('Install and enable Danish translation.'),
     '#default_value' => FALSE,
-    '#weight' => 11,
   );
 
   $form['submit'] = array(
@@ -80,7 +87,7 @@ function loopdk_module_selection_form($form, &$form_state) {
 }
 
 /**
- * Formula submit function for LOOP settings.
+ * Formula submit function for Loop settings.
  */
 function loopdk_module_selection_form_submit($form, &$form_state) {
   $dependency_modules = array();
@@ -89,8 +96,11 @@ function loopdk_module_selection_form_submit($form, &$form_state) {
     variable_set('loopdk_install_translations', TRUE);
   }
 
-  if ($form_state['values']['dashboard']) {
-    $dependency_modules[] = 'loop_editor_pages';
+  $all_modules = system_rebuild_module_data();
+  foreach ($form_state['values'] as $module => $install) {
+    if (isset($all_modules[$module]) && $install) {
+      $dependency_modules[] = $module;
+    }
   }
 
   if ($form_state['values']['user_pages']) {
@@ -391,7 +401,7 @@ function loopdk_setup_filter_and_wysiwyg() {
 }
 
 /**
- * Final LOOP install profile settings.
+ * Final Loop install profile settings.
  *
  * 1. Revert every feature.
  * 2. Enable Transliterate contribute module setting.

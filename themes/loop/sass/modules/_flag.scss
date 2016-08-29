@@ -1,0 +1,187 @@
+/**
+ *
+ * Flag module
+ *
+ */
+
+
+.comment--flag {
+  border: 1px solid $gray;
+  display: block;
+  padding: .5em 1em;
+
+  background-color: $white;
+  font-size: .85em;
+  font-weight: bold;
+  text-align: center;
+
+  @include border-radius($border-radius);
+
+  &:before {
+    @extend %icon-like;
+    @extend %icon-before;
+
+    font-size: 150%;
+    vertical-align: top;
+  }
+
+  /* States */
+  &.is-sticky {
+    font-size: 1em;
+  }
+
+  &.is-active,
+  &.is-sticky,
+  &.unflag-action {
+
+    border: 1px solid $link-color;
+
+    color: $link-color;
+  }
+
+  &.is-sticky {
+    &:before {
+      @extend %icon-check;
+    }
+  }
+}
+
+// If it's a link add pseudo styles.
+.flag-ranking a.comment--flag {
+  &:link,
+  &:visited,
+  &:hover,
+  &:active {
+    color: $gray;
+    text-decoration: none;
+  }
+
+  &:hover {
+    border: 1px solid $gray-dark;
+
+    color: $gray-dark;
+  }
+
+  /* States */
+  &.is-active,
+  &.is-sticky,
+  &.unflag-action {
+    &:link,
+    &:visited,
+    &:hover,
+    &:active {
+      border: 1px solid $link-color;
+
+      color: $link-color;
+      text-decoration: none;
+    }
+
+    &:hover {
+      border: 1px solid $gray-dark;
+
+      color: $gray-dark;
+    }
+
+    &:hover {
+      border: 1px solid $link-color-hover;
+
+      color: $link-color-hover;
+    }
+  }
+}
+
+
+// Block follow question.
+.block-follow-question {
+  .node--flag {
+    width: 100%;
+
+    font-size: 1em;
+
+    @include box-sizing(border-box);
+  }
+
+  .flag-action {
+    @extend .button--action;
+  }
+
+  .unflag-action {
+    @extend .button--warning;
+  }
+
+  .flag-message {
+    // jQuery adds inline styling and because we used !important earlier we have to use !important again to show the
+    // flag.
+    display: block;
+
+    // Using margin top because we don't have a class to use.
+    margin-top: 1em;
+    padding: 1.5em;
+
+    background-color: $green-lighter;
+
+    @include border-radius($border-radius);
+    @include box-sizing(border-box);
+  }
+}
+
+
+// Adding margin bottom to the flag link so there are spacing below when the message appears.
+.flag-outer-subscribe-node {
+  margin-bottom: -1.5em;
+
+  .flag {
+    margin-bottom: 1.5em;
+  }
+}
+
+.message--flag-wrapper {
+  position: absolute;
+  top: .8em;
+  right: 0;
+
+  padding-bottom: 1em;
+
+  text-align: center;
+
+  @include box-sizing(border-box);
+}
+
+.message--flag {
+  position: relative;
+  top: 50%;
+
+  display: block;
+  height: 1.5em;
+  overflow: hidden;
+  width: 1.5em;
+
+  @include translateY(-50%);
+
+  &:before {
+    @extend %icon-cancel-circled;
+
+    font-size: 1.5em;
+  }
+}
+
+
+/* Abuse module
+   ================================================================================================================== */
+
+.abuse_flag_comment .flag-content,
+.abuse_flag_node .flag-content {
+  color: #fff;
+  background-color: #595959;
+  padding: .4em 1em;
+  display: inline-block;
+  font-size: .8em;
+
+  @include border-radius(0.4em);
+
+  &:link,
+  &:active,
+  &:visited {
+    color: $white;
+  }
+}

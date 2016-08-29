@@ -1,0 +1,48 @@
+/**
+ *
+ * Questions block
+ *
+ */
+
+
+
+.block-questions--header-wrapper {
+  border-bottom: 1px solid $border-color;
+
+  @include element-spacing(1.5em);
+}
+
+.block-questions--header {
+  font-size: 130%;
+  font-weight: bold;
+}
+
+.block-questions--sub-header {
+  margin-bottom: 0;
+
+  color: $gray;
+  font-size: .85em;
+}
+
+.block-questions--item {
+  @include element-spacing(1em);
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.block-questions--link {
+  display: block;
+  margin-bottom: .5em;
+
+  &:link,
+  &:visited {
+    text-decoration: none;
+  }
+
+  &:hover,
+  &:active {
+    text-decoration: underline;
+  }
+}

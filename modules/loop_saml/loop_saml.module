@@ -1,0 +1,162 @@
+<?php
+/**
+ * @file
+ * Adds support for ADFS SAML integration.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function loop_saml_menu() {
+  $items = array();
+
+  $items['loop_saml_redirect'] = array(
+    'title' => 'Simple redirect page',
+    'page callback' => 'loop_saml_redirect',
+    'access callback' => TRUE,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function loop_saml_init() {
+  // Do not run this from CLI.
+  if (php_sapi_name() != 'cli') {
+    global $user;
+    // Verify this is an anonymous user.
+    if ($user->uid === 0) {
+      $arg = arg();
+
+      // Verify this is a front-page request.
+      if (isset($arg[0]) && ($arg[0] == 'front')) {
+        // Redirect the user to the IdP.
+        drupal_goto('saml/drupal_login');
+      }
+    }
+  }
+}
+
+/**
+ * Simple iFrame redirect page.
+ */
+function loop_saml_redirect() {
+  // Be sure the session is deleted.
+  if (drupal_session_started()) {
+    session_destroy();
+  }
+
+  // Add i-frame that log out the user at adfs.
+  $output = array(
+    '#markup' => '<iframe src="https://adfs.aarhuskommune.dk/adfs/ls/?wa=wsignout1.0" frameborder="0" width="0px" height="0px"></iframe><p>' . t('Please wait while you are being logged out of the system.') . '</p>',
+  );
+
+  drupal_add_js(drupal_get_path('module', 'loop_saml') . '/js/loop_saml.js');
+
+  return $output;
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function loop_saml_user_logout($account) {
+  if (variable_get('saml_sp_drupal_login__logout', FALSE) === 0) {
+    // Setup a temporary redirect. This will log the user out of the IdP.
+    $_GET['destination'] = 'loop_saml_redirect';
+  }
+}
+
+/**
+ * Implements hook_saml_sp_post_create_user().
+ */
+function loop_saml_saml_sp_post_create_user_alter($account, $attributes) {
+  _loop_saml_setup_account($account, $attributes);
+}
+
+/**
+ * Implements hook_saml_sp_post_update_user().
+ */
+function loop_saml_saml_sp_post_update_user_alter($account, $attributes) {
+  _loop_saml_setup_account($account, $attributes);
+}
+
+/**
+ * Implements hook_form_ID_alter().
+ *
+ * Be sure to redirect to /user page.
+ */
+function loop_saml_form_user_login_alter(&$form, &$form_state) {
+  $idp_selection = variable_get('saml_sp_drupal_login__idp', '');
+  $idp = saml_sp_idp_load($idp_selection);
+
+  $destination = drupal_get_destination();
+  $returnTo = $destination['destination'];
+  $options = array('query' => array('returnTo' => $returnTo));
+  $items['link'] = array(
+    'content' => l(t('Log in using @idp_name', array('@idp_name' => $idp->name)), 'saml/drupal_login', $options),
+    'class' => array('saml-link'),
+  );
+
+  $form['name']['#prefix'] = theme('loop_saml_prefix_login', $items);
+  unset($form['saml_sp_drupal_login_links']);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_saml_theme() {
+  return array(
+    'loop_saml_prefix_login' => array(
+      'variables' => array(),
+      'template' => 'templates/loop-saml--prefix-login',
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_ID_alter().
+ *
+ * Re-enable password field.
+ */
+function loop_saml_form_user_profile_form_alter(&$form, &$form_state) {
+  $form['account']['pass'] = array(
+    '#type' => 'password_confirm',
+    '#size' => 25,
+    '#description' => t('To change the current user password, enter the new password in both fields.'),
+  );
+
+  if (isset($form['account']['mail']['#disabled'])) {
+    unset($form['account']['mail']['#disabled']);
+  }
+}
+
+/**
+ * Setup Loop specific account details.
+ *
+ * @param object $account
+ *   Drupal account.
+ * @param array $attributes
+ *   SAML attributes.
+ */
+function _loop_saml_setup_account($account, array $attributes) {
+  $fullename = $attributes['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/displayname'][0];
+
+  $names = preg_split("/\s+(?=\S*+$)/", $fullename);
+
+  $wrapper = entity_metadata_wrapper('user', $account);
+  $wrapper->field_first_name->set($names[0]);
+  $wrapper->field_last_name->set($names[1]);
+  $wrapper->save();
+}
+
+/**
+ * Implements hook_preprocess().
+ *
+ * Inform the theme whether or not the user is logged in via SAML.
+ */
+function loop_saml_preprocess(&$variables) {
+  $variables['logged_in_via_saml'] = saml_sp_drupal_login_is_authenticated();
+}

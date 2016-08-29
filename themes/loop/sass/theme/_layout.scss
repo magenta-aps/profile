@@ -1,0 +1,343 @@
+/**
+ * Layout
+ *
+ * Contains styling of layout elements
+ *
+ * @author magnify
+ */
+
+
+/* Header
+   ================================================================================================================== */
+
+.header {
+  margin-bottom: $margin-bottom;
+  z-index: 1;
+  background-color: $green;/*! setting:header_color */
+  @include zen-grid-container();
+}
+
+.header--inner {
+  @extend %set-max-width-and-center-element;
+
+  position: relative;
+
+  min-height: 5em;
+  padding-right: 1em;
+  padding-left: 1em;
+}
+
+
+/* Logo
+   ================================================================================================================== */
+
+.logo--link {
+  position: absolute;
+  top: 50%;
+
+  display: inline-block;
+  padding-top: 0;
+
+  text-align: center;
+
+  @include transform(translateY(-50%));
+}
+
+.logo--image {
+  margin-right: auto;
+  margin-left: auto;
+  max-height: 2em;/*! setting:header_logo_height */
+  max-width: 4em;
+
+  vertical-align: middle;
+
+  @include breakpoint($breakpoint-3) {
+    max-width: 16em;
+  }
+}
+
+
+
+/* Layouts
+   ================================================================================================================== */
+
+%layout--wrapper {
+  @extend %set-max-width-and-center-element;
+  @extend %basic-element-styling;
+
+  overflow: hidden;
+  margin-bottom: 0;
+
+  .layout--inner:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.layout--inner {
+  @extend %basic-element-inner-styling;
+
+  float: left;
+  margin-bottom: $margin-bottom;
+  padding: 1.5em;
+  width: 100%;
+}
+
+.layout-element-alpha,
+.layout-element-beta,
+.layout-element-gamma,
+.layout-element-delta,
+.layout-element-epsilon {
+  float: left;
+
+  width: 100%;
+
+  @include box-sizing(border-box);
+}
+
+// Full width layout
+.layout-full-width {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include breakpoint(45em) {
+      @include zen-grid-item(12, 1);
+
+      padding-left: 0;
+    }
+  }
+}
+
+// Frontpage layout
+
+.layout-frontpage {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include breakpoint(45em) {
+      @include zen-grid-item(12, 1);
+
+      padding-left: 0;
+    }
+  }
+
+  .layout-element-beta {
+    @include element-spacing(2em);
+
+    @include breakpoint($layout-max-width) {
+      @include zen-grid-item(6, 1);
+      @include reset-element-spacing();
+
+      padding-left: 0;
+
+      &.js-full-width {
+        overflow: hidden;
+        width: 100%;
+      }
+    }
+  }
+
+  .layout-element-gamma {
+    @include breakpoint($layout-max-width) {
+      @include zen-grid-item(6, 1, right);
+
+      padding-right: 0;
+    }
+
+    &.js-full-width {
+      overflow: hidden;
+      width: 100%;
+    }
+  }
+
+  .layout-element-delta {
+    @include breakpoint(45em) {
+      @include zen-grid-item(12, 1);
+
+      padding-left: 0;
+    }
+  }
+}
+
+
+// Dashboard layout
+
+.layout-dashboard {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include element-spacing(2em);
+
+    @include breakpoint($layout-max-width) {
+      @include zen-grid-item(6, 1);
+      @include reset-element-spacing();
+
+      padding-left: 0;
+    }
+  }
+
+  .layout-element-beta,
+  .layout-element-delta {
+    @include breakpoint($layout-max-width) {
+      @include zen-grid-item(6, 1, right);
+
+      padding-right: 0;
+    }
+  }
+
+  .layout-element-gamma {
+    @include zen-grid-item(12, 1);
+  }
+}
+
+
+// Default layout
+
+.layout-default {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include element-spacing(2em);
+
+    @include breakpoint(45em) {
+      @include zen-grid-item(8.5, 1);
+      @include reset-element-spacing();
+
+      padding-left: 0;
+    }
+  }
+
+  .layout-element-beta {
+    @include breakpoint(45em) {
+      @include zen-grid-item(3.5, 1, right);
+
+      padding-right: 0;
+    }
+  }
+
+  .layout-element-gamma,
+  .layout-element-delta,
+  .layout-element-epsilon {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(12, 1);
+      @include zen-nested-container;
+    }
+  }
+}
+
+// Default layout inverted
+
+.layout-default-inverted {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include breakpoint(45em) {
+      @include zen-grid-item(3.5, 1);
+
+      padding-left: 0;
+    }
+  }
+
+  .layout-element-beta {
+    @include breakpoint(45em) {
+      @include zen-grid-item(8.5, 1, right);
+
+      padding-right: 0;
+    }
+  }
+
+  .layout-element-gamma {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(6, 1);
+    }
+  }
+
+  .layout-element-delta {
+    @include breakpoint(45em) {
+      @include zen-grid-item(6, 1, right);
+    }
+  }
+
+  .layout-element-epsilon {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(12, 1);
+    }
+  }
+
+  .layout-element-gamma,
+  .layout-element-delta,
+  .layout-element-epsilon {
+    @include zen-nested-container;
+  }
+}
+
+
+// Alternative layout
+
+.layout-alternative {
+  @extend %layout--wrapper;
+
+  .layout-element-alpha {
+    @include breakpoint(45em) {
+      @include zen-grid-item(12, 1);
+    }
+  }
+
+  .layout-element-beta {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(12, 1);
+    }
+  }
+
+  .layout-element-gamma {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(6, 1);
+    }
+  }
+
+  .layout-element-delta {
+    @include breakpoint(45em) {
+      @include zen-grid-item(6, 1, right);
+    }
+  }
+
+  .layout-element-epsilon {
+    @include breakpoint(45em) {
+      clear: both;
+
+      @include zen-grid-item(12, 1);
+    }
+  }
+}
+
+// Layout without element wrappers
+
+.layout-no-wrapper {
+  @extend %layout--wrapper;
+
+  .layout--inner {
+    padding: 1.5em;
+  }
+}
+
+
+// Make all layout elements nested containers
+.layout-alternative,
+.layout-no-wrapper {
+  .layout-element-alpha,
+  .layout-element-beta,
+  .layout-element-gamma,
+  .layout-element-delta,
+  .layout-element-epsilon {
+    @include zen-nested-container;
+  }
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop user page views feature.
+ */
+
+include_once 'loop_user_page_views.features.inc';

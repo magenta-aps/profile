@@ -1,0 +1,16 @@
+name = Loop dashboard
+description = Holds views and pages for the Loop dashboard
+core = 7.x
+package = Loop
+dependencies[] = loop_admin
+dependencies[] = loop_flag
+dependencies[] = loop_navigation
+dependencies[] = loop_permissions
+dependencies[] = loop_post
+dependencies[] = loop_user
+features[ctools][] = page_manager:pages_default:1
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[page_manager_pages][] = editor_dashboard
+features_exclude[dependencies][ctools] = ctools
+features_exclude[dependencies][page_manager] = page_manager

@@ -1,0 +1,49 @@
+/**
+ *
+ * Abuse module
+ * The abuse module pages are hardcoded from module so the html is not easily manipulated.
+ * We style with one nesting from the body tag.
+ *
+ * Abuse links are styled seperately in flag module and comment or question modules.
+ *
+ */
+
+
+/* Report page
+   ================================================================================================================== */
+
+.page-abuse-report {
+
+  .form-type-item {
+    label {
+      &:after {
+        content: ':';
+      }
+    }
+  }
+
+  label {
+    text-transform: capitalize;  // Meh... The module doesn't provide capital letters on these labels.
+  }
+}
+
+
+/* Admin overview page
+   ================================================================================================================== */
+
+.page-admin-content-abuse {  // This page shows far too much info. (We cant override the module template. So we do it the BAD way - Sry...)
+  .details {
+    display: none;
+  }
+
+  .abuse-report label {
+    clear: left;
+    float: left;
+    padding-right: 1em;
+  }
+
+  .links,
+  .description {
+    float: left;
+  }
+}

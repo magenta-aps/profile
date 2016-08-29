@@ -1,0 +1,27 @@
+.node-subscription,
+.taxonomy-subscription {
+
+	margin-bottom: 1.5em;
+
+	.view-header {
+		font-size: 1.5em;
+	}
+
+	.user-profile--notification-actions {
+		margin-bottom: 0;
+	}
+
+	.view-content{
+		margin-top: 0.25em;
+	}
+}
+
+.taxonomy-subscription {
+	.view-content {
+		.views-field {
+			a {
+				color: $red;
+			}
+		}
+	}
+}

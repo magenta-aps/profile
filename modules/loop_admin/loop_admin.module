@@ -1,0 +1,836 @@
+<?php
+/**
+ * @file
+ * Alter paths and build statistics for users.
+ *
+ * @todo: Update the *_element functions as they are almost the same.
+ * @todo: Move date filter limit into own sql function.
+ */
+
+include_once 'loop_admin.features.inc';
+
+// Defines the number of rows to show in the statistics tables.
+define('LOOP_ADMIN_STATISTICS_LIMIT', 5);
+
+// Define the name of the flag to use in statistics.
+define('LOOP_ADMIN_STATISTICS_FLAG_NAME', 'ranking');
+
+// Define the question node type.
+define('LOOP_ADMIN_STATISTICS_NODE_TYPE', 'post');
+
+/**
+ * Implements hook_admin_paths_alter().
+ *
+ * Setup permissions for user pages and create user pages.
+ */
+function loop_admin_admin_paths_alter(&$paths) {
+  // Treat all user pages as not administrative.
+  $paths['user/*'] = FALSE;
+  $paths['admin/people/create'] = FALSE;
+}
+
+/**
+ * Implements hook_FORM_ID_form_alter().
+ *
+ * Add full name to author information tab.
+ */
+function loop_admin_form_post_node_form_alter(&$form, &$form_state) {
+  $account = user_load($form['uid']['#value']);
+
+  $name = _loop_admin_generate_full_name($account);
+  if (!$name) {
+    $name = t('Not set');
+  }
+  $form['author']['name']['#title'] .= ' fullname: <span>' . $name . '</span>';
+}
+
+/**
+ * Implements hook_menu().
+ */
+function loop_admin_menu() {
+  $items = array();
+
+  $items['editor/dashboard/user-statistics'] = array(
+    'title' => 'Internal statistics',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('_loop_admin_user_statistics_form'),
+    'access arguments' => array('administer users'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_admin_theme($existing, $type, $theme, $path) {
+  return array(
+    'loop_admin_stats_post_count' => array(
+      'variables' => array(
+        'post_count' => 0,
+        'comment_count' => 0,
+      ),
+      'template' => 'templates/loop_admin_stats_post_count',
+    ),
+  );
+}
+
+/**
+ * Menu callback that generates the table.
+ */
+function _loop_admin_user_statistics_form($form, &$form_state) {
+  // Check for filter values.
+  $filter = array();
+  if (isset($form_state['input']['filter']['start_date']['date'])) {
+    $filter['date']['start'] = strtotime($form_state['input']['filter']['start_date']['date']);
+  }
+
+  if (isset($form_state['input']['filter']['end_date']['date'])) {
+    $filter['date']['end'] = strtotime($form_state['input']['filter']['end_date']['date']);
+
+    // Ensure that this is the end of the day to include the date.
+    $filter['date']['end'] += 86399;
+  }
+
+  // Build filter field set.
+  $form['filter'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Filter list'),
+    '#collapsible' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  $form['filter']['start_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('Start'),
+    '#required' => TRUE,
+    '#date_format' => 'd-m-Y',
+    '#date_label_position' => 'none',
+    '#attributes' => array('autocomplete' => 'off'),
+    '#default_value' => isset($filter['date']['start']) ? date('Y-m-d H:i:s', $filter['date']['start']) : '',
+  );
+
+  $form['filter']['end_date'] = array(
+    '#type' => 'date_popup',
+    '#title' => t('End'),
+    '#required' => TRUE,
+    '#date_format' => 'd-m-Y',
+    '#date_label_position' => 'none',
+    '#attributes' => array('autocomplete' => 'off'),
+    '#default_value' => isset($filter['date']['end']) ? date('Y-m-d H:i:s', $filter['date']['end']) : '',
+  );
+
+  // Add Ajax submit button (as form submits to own address and loads twice,
+  // hence values are empty on load).
+  $form['filter']['submit'] = array(
+    '#type' => 'button',
+    '#value' => t('Filter'),
+    '#name' => 'filter-submit',
+    '#ajax' => array(
+      'callback' => '_loop_admin_user_statistics_ajax_callback',
+      'wrapper' => 'replace-stats',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  // Add javascript to handle reset of data-pickers on ajax completed events to
+  // clear out the date filters.
+  $form['#attached']['js'] = array(
+    drupal_get_path('module', 'loop_admin') . '/js/loop_admin.js',
+  );
+
+  // Add reset button to clear the sessions filter.
+  $form['filter']['reset'] = array(
+    '#type' => 'button',
+    '#value' => t('Reset'),
+    '#name' => 'filter-reset',
+    '#ajax' => array(
+      'callback' => '_loop_admin_user_statistics_reset_ajax_callback',
+      'wrapper' => 'replace-stats',
+      'method' => 'replace',
+      'effect' => 'fade',
+    ),
+  );
+
+  // Add wrapper to replace on filter.
+  $form['stats'] = array(
+    '#tree' => TRUE,
+    '#prefix' => '<div id="replace-stats">',
+    '#suffix' => '</div>',
+  );
+
+  // Add field-set for content stats.
+  $form['stats']['content'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content statistics'),
+    '#collapsible' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  // Add basic count of posts and comments.
+  _loop_admin_content_statistics_total_count_element($form, $filter);
+
+  // Add top answers.
+  _loop_admin_content_statistics_answers_count_element($form, $filter);
+
+  // Add thumbs up.
+  _loop_admin_content_statistics_thumbs_up_count_element($form, $filter);
+
+  // Add field-set for user stats.
+  $form['stats']['user'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('User statistics'),
+    '#collapsible' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  // Add top answers base on users.
+  _loop_admin_users_statistics_answers_count_element($form, $filter);
+
+  // Add top new posts based on users.
+  _loop_admin_users_statistics_post_count_element($form, $filter);
+
+  // Add top accepted answers based on users.
+  _loop_admin_users_statistics_accepted_answers_element($form, $filter);
+
+  // Add top thumbs up based on users.
+  _loop_admin_users_statistics_thumbs_up_element($form, $filter);
+
+  return $form;
+}
+
+/**
+ * Ajax callback for the filter form.
+ */
+function _loop_admin_user_statistics_ajax_callback($form, $form_state) {
+  $form = _loop_admin_user_statistics_form($form, $form_state);
+  return $form['stats'];
+}
+
+/**
+ * Ajax callback for the reset filter button.
+ */
+function _loop_admin_user_statistics_reset_ajax_callback($form, $form_state) {
+  // Remove values form form state.
+  unset($form_state['input']['filter']);
+
+  // Rebuild the form.
+  return _loop_admin_user_statistics_ajax_callback($form, $form_state);
+}
+
+/**
+ * Wrapper function to add accepted answers to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_users_statistics_thumbs_up_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_users_statistics_thumbs_up($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit thumbs up', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l($row->fullname, 'user/' . $row->uid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['user']['thumbs_up'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#sticky' => FALSE,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--statistics-table'),
+  );
+}
+
+/**
+ * Get list of thumbs up.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_users_statistics_thumbs_up($filter = array()) {
+  // Start by select all comments.
+  $query = db_select('comment', 'c')
+    ->fields('c', array('uid'));
+
+  // Join flagging to be able to limit based on flag time later.
+  $query->join('flagging', 'fl', 'fl.entity_id = c.cid');
+
+  // Join flag to limit to one flag type.
+  $query->join('flag', 'f', 'fl.fid = f.fid AND f.name = :name', array(':name' => LOOP_ADMIN_STATISTICS_FLAG_NAME));
+
+  // Join users and field tables to get the users full name.
+  $query->join('users', 'u', 'c.uid = u.uid');
+  $query->join('field_data_field_first_name', 'fn', 'fn.entity_id = u.uid');
+  $query->join('field_data_field_last_name', 'ln', 'ln.entity_id = u.uid');
+  $query->addField('fn', 'field_first_name_value', 'firstname');
+  $query->addField('ln', 'field_last_name_value', 'lastname');
+  $query->addExpression("CONCAT_WS(' ', field_first_name_value, field_last_name_value)", 'fullname');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('fl.timestamp', $filter['date']['start'], '>=')
+      ->condition('fl.timestamp', $filter['date']['end'], '<=');
+  }
+
+  // Count the number of comments (answers).
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Group by users id to get correct count.
+  $query->groupBy('u.uid');
+
+  // Order to get the largest number first.
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+/**
+ * Wrapper function to add best answers to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_users_statistics_accepted_answers_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_users_statistics_accepted_answers($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit best answers', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l($row->fullname, 'user/' . $row->uid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['user']['top_accepted'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#sticky' => FALSE,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--statistics-table'),
+  );
+}
+
+/**
+ * Get list of accepted answers.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_users_statistics_accepted_answers($filter = array()) {
+  // Start by build sub-query based on nodes.
+  $subquery = db_select('node', 'n')
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Join comments to limit to nodes with comments.
+  $subquery->join('comment', 'c', 'c.nid = n.nid');
+  $subquery->addField('c', 'uid', 'uid');
+
+  // Join flag counts to get... well counts.
+  $subquery->join('flag_counts', 'fc', 'c.cid = fc.entity_id');
+
+  // Join flagging to be able to limit based on flag time later.
+  $subquery->join('flagging', 'fl', 'fl.entity_id = c.cid');
+
+  // Join flag to limit to one flag type.
+  $subquery->join('flag', 'f', 'fl.fid = f.fid AND f.name = :name', array(':name' => LOOP_ADMIN_STATISTICS_FLAG_NAME));
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $subquery->condition('fl.timestamp', $filter['date']['start'], '>=')
+      ->condition('fl.timestamp', $filter['date']['end'], '<=');
+  }
+
+  // Group by node id (use to get max later).
+  $subquery->groupBy('n.nid');
+
+  // Get max count values.
+  $subquery->addExpression('MAX(fc.count)', 'count');
+
+  // Build the outer query to count max's and join user information.
+  $query = db_select($subquery, 'ct')
+    ->fields('ct', array('uid'));
+
+  // Join users and field tables to get the users full name.
+  $query->join('users', 'u', 'ct.uid = u.uid');
+  $query->join('field_data_field_first_name', 'fn', 'fn.entity_id = u.uid');
+  $query->join('field_data_field_last_name', 'ln', 'ln.entity_id = u.uid');
+  $query->addField('fn', 'field_first_name_value', 'firstname');
+  $query->addField('ln', 'field_last_name_value', 'lastname');
+  $query->addExpression("CONCAT_WS(' ', field_first_name_value, field_last_name_value)", 'fullname');
+
+  // Count the number of comments (answers).
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Group by users id to get correct count.
+  $query->groupBy('ct.uid');
+
+  // Order to get the largest number first.
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+/**
+ * Wrapper function to add top users new posts to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_users_statistics_post_count_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_users_statistics_post_count($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit new posts', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l($row->fullname, 'user/' . $row->uid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['user']['top_posts'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#sticky' => FALSE,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--statistics-table'),
+  );
+}
+
+/**
+ * Get list of post counts based on users.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_users_statistics_post_count($filter = array()) {
+  // Start by selection all post nodes.
+  $query = db_select('node', 'n')
+    ->fields('n', array('uid'))
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Join users and field tables to get the users full name.
+  $query->join('users', 'u', 'n.uid = u.uid');
+  $query->join('field_data_field_first_name', 'fn', 'fn.entity_id = u.uid');
+  $query->join('field_data_field_last_name', 'ln', 'ln.entity_id = u.uid');
+  $query->addField('fn', 'field_first_name_value', 'firstname');
+  $query->addField('ln', 'field_last_name_value', 'lastname');
+  $query->addExpression("CONCAT_WS(' ', field_first_name_value, field_last_name_value)", 'fullname');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('n.created', $filter['date']['start'], '>=')
+      ->condition('n.created', $filter['date']['end'], '<=');
+  }
+
+  // Count the number of comments (answers).
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Group by users id to get correct count.
+  $query->groupBy('u.uid');
+
+  // Order to get the largest number first.
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+/**
+ * Wrapper function to add top users answers to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_users_statistics_answers_count_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_users_statistics_answers_count($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit most answered posts', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l($row->fullname, 'user/' . $row->uid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['user']['top_answers'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#sticky' => FALSE,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--statistics-table'),
+  );
+}
+
+/**
+ * Get list of answers base on users.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_users_statistics_answers_count($filter = array()) {
+  // Start by selection all node of type post.
+  $query = db_select('node', 'n')
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Join comments to limit to nodes with comments.
+  $query->join('comment', 'c', 'c.nid = n.nid');
+  $query->addField('c', 'uid', 'uid');
+
+  // Join users and field tables to get the users full name.
+  $query->join('users', 'u', 'c.uid = u.uid');
+  $query->join('field_data_field_first_name', 'fn', 'fn.entity_id = u.uid');
+  $query->join('field_data_field_last_name', 'ln', 'ln.entity_id = u.uid');
+  $query->addField('fn', 'field_first_name_value', 'firstname');
+  $query->addField('ln', 'field_last_name_value', 'lastname');
+  $query->addExpression("CONCAT_WS(' ', field_first_name_value, field_last_name_value)", 'fullname');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('n.created', $filter['date']['start'], '>=')
+      ->condition('n.created', $filter['date']['end'], '<=');
+  }
+
+  // Count the number of comments (answers).
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Group by users id to get correct count.
+  $query->groupBy('c.uid');
+
+  // Order to get the largest number first.
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+/**
+ * Wrapper function to add thumbs up table to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_content_statistics_thumbs_up_count_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_content_statistics_thumbs_up_count($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit thumbs up', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l($row->subject, 'comment/' . $row->cid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['content']['thumbs_up'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#sticky' => FALSE,
+    '#rows' => $rows,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--content-statistics-table'),
+  );
+}
+
+/**
+ * Get list of thumbs up.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_content_statistics_thumbs_up_count($filter = array()) {
+  // Select all flag counters and select count.
+  $query = db_select('flagging', 'fl');
+
+  // Join flag to limit to one flag type.
+  $query->join('flag', 'f', 'fl.fid = f.fid AND f.name = :name', array(':name' => LOOP_ADMIN_STATISTICS_FLAG_NAME));
+
+  // Join comments to get title.
+  $query->join('comment', 'c', 'fl.entity_id = c.cid');
+
+  // Add extra fields from comment table.
+  $query->addField('c', 'subject');
+  $query->addField('c', 'cid');
+
+  // Count the flags.
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('fl.timestamp', $filter['date']['start'], '>=');
+    $query->condition('fl.timestamp', $filter['date']['end'], '<=');
+  }
+
+  // Order by there flag count.
+  $query->groupBy('fl.entity_id');
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+
+/**
+ * Wrapper function to add top list of answers in posts to the form.
+ *
+ * @param array $form
+ *   Form to add the table to.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_content_statistics_answers_count_element(&$form, $filter = array()) {
+  // Get statistics.
+  $result = _loop_admin_content_statistics_answers_count($filter);
+
+  // Define headers.
+  $header = array(
+    array('data' => t('The top @limit most answered posts', array('@limit' => LOOP_ADMIN_STATISTICS_LIMIT))),
+    array('data' => t('Count')),
+  );
+
+  // Looping to fill the table rows.
+  $rows = array();
+  foreach ($result as $row) {
+    // Fill the table rows.
+    $rows[] = array(
+      l(truncate_utf8($row->title, '25', $wordsafe = FALSE, $add_ellipsis = TRUE), 'node/' . $row->nid),
+      $row->count,
+    );
+  }
+
+  // Theme tables.
+  $form['stats']['content']['top_answers'] = array(
+    '#theme' => 'table',
+    '#header' => $header,
+    '#rows' => $rows,
+    '#sticky' => FALSE,
+    '#empty' => t('Table has no row!'),
+    '#attributes' => array('class' => 'dashboard--content-statistics-table'),
+  );
+}
+
+/**
+ * Get list of posts order by the number of answers a post got.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return DatabaseStatementInterface|null
+ *   The database results or NULL if no results.
+ */
+function _loop_admin_content_statistics_answers_count($filter = array()) {
+  // Select all "post" nodes.
+  $query = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Join comments on the table.
+  $query->join('comment', 'c', 'n.nid = c.nid');
+
+  // Count the number of answers.
+  $query->addExpression('COUNT(1)', 'count');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('n.created', $filter['date']['start'], '>=')
+      ->condition('n.created', $filter['date']['end'], '<=');
+  }
+
+  // Group by node id's and order by there count.
+  $query->groupBy('n.nid');
+  $query->orderBy('count', 'desc');
+
+  // Limit the number of rows.
+  $query->range(0, LOOP_ADMIN_STATISTICS_LIMIT);
+
+  // Execute query.
+  return $query->execute();
+}
+
+/**
+ * Builds the new questions and answers block.
+ *
+ * @param array $form
+ *   The form to insert the block into.
+ * @param array $filter
+ *   The different values to filter on.
+ */
+function _loop_admin_content_statistics_total_count_element(&$form, $filter = array()) {
+  $form['stats']['content']['post_count'] = array(
+    '#theme' => 'loop_admin_stats_post_count',
+    '#post_count' => _loop_admin_content_statistics_post_count($filter),
+    '#comment_count' => _loop_admin_content_statistics_comment_count($filter),
+  );
+}
+
+/**
+ * Count the number of posts in the database.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return int
+ *   The number of posts.
+ */
+function _loop_admin_content_statistics_post_count($filter = array()) {
+  // Use the node table to get node with type "post".
+  $query = db_select('node', 'n')
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('n.created', $filter['date']['start'], '>=')
+      ->condition('n.created', $filter['date']['end'], '<=');
+  }
+
+  // Return the number of rows (the count).
+  return $query->countQuery()->execute()->fetchField();
+}
+
+/**
+ * Count the number of comments to posts in the database.
+ *
+ * @param array $filter
+ *   The different values to filter on.
+ *
+ * @return int
+ *   The number of comments.
+ */
+function _loop_admin_content_statistics_comment_count($filter = array()) {
+  // Use the node table to get node with type "post".
+  $query = db_select('node', 'n')
+    ->condition('n.type', LOOP_ADMIN_STATISTICS_NODE_TYPE, '=');
+
+  // Join comments on the table.
+  $query->join('comment', 'c', 'n.nid = c.nid');
+
+  // Filter the query on date.
+  if (isset($filter['date'])) {
+    $query->condition('n.created', $filter['date']['start'], '>=')
+      ->condition('n.created', $filter['date']['end'], '<=');
+  }
+
+  // Return the number of rows (the count).
+  return $query->countQuery()->execute()->fetchField();
+}
+
+/**
+ * Get full name from an user account.
+ *
+ * @param StdClass $account
+ *   Drupal user account.
+ *
+ * @return string
+ *   The users full name.
+ */
+function _loop_admin_generate_full_name($account) {
+  $name = '';
+  if (isset($account->field_first_name['und'][0]['safe_value'])) {
+    $name = '' . $account->field_first_name['und'][0]['safe_value'];
+    if (isset($account->field_last_name['und'][0]['safe_value'])) {
+      $name .= ' ' . $account->field_last_name['und'][0]['safe_value'];
+
+    }
+  }
+
+  return $name;
+}

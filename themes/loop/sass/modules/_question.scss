@@ -1,0 +1,185 @@
+/**
+ * Question module
+ *
+ * @author magnify
+ */
+
+
+/* Question
+   ================================================================================================================== */
+
+.question--wrapper {
+  margin-bottom: 2.5em;
+
+  &.has-comments {
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.question--meta-data {
+  padding: .5em 1.25em .65em;
+
+  background-color: $gray-background;
+  color: $gray-color;
+  font-size: 80%;
+
+  @include border-radius($border-radius);
+
+  @include breakpoint(51em) {
+    float: right;
+  }
+}
+
+
+.question--inner {
+  clear: both;
+}
+
+.question--label {
+  display: block;
+  margin-bottom: .25em;
+
+  font-size: 125%;
+  font-weight: bold;
+}
+
+.question--files {
+  overflow: hidden;
+}
+
+.question--icon {
+  height: 16px;
+  width: 16px;
+  float: left;
+  display: block;
+  margin-right: .5em;
+  background: url('../images/document-icon.png') no-repeat right top;
+}
+
+.question--icon-application-pdf {
+  background: url('../images/pdf-icon.png') no-repeat right top;
+}
+
+.question--icon-image-jpeg,
+.question--icon-image-png,{
+  background: url('../images/image-icon.png') no-repeat right top;
+}
+
+.question--files-label {
+  float: left;
+  margin-right: 1.6em;
+}
+
+.question--files-content {
+  float: left;
+}
+
+.question--label-edit-link {
+  font-weight: normal;
+}
+
+.question {
+  margin-bottom: 1em;
+
+  font-size: 125%;
+}
+
+.question--terms {
+  margin-bottom: 2em;
+}
+
+.question--term {
+  @extend %tag;
+}
+
+// Allow style settings to override these colors.
+a.question--term {
+  background-color: $red;/*! setting:term_background_color */
+
+  &:hover {
+    background-color: darken($red, 15%);/*! setting:term_hover_background_color */
+  }
+}
+
+.question--links {
+  font-size: .8em;
+  list-style-type: none;
+  overflow: hidden;
+  padding: 0;
+  white-space: nowrap;
+
+  @include custom-links($green, $green, $green);
+
+  a {
+    &:before {
+      @extend %icon-flag-filled;
+      @extend %icon-before;
+
+      margin-right: .5em;
+    }
+
+    &:hover {
+      color: $green;
+    }
+  }
+}
+
+.question--editor-actions {
+  font-size: .8em;
+  list-style-type: none;
+  margin-bottom: 1em;
+  overflow: hidden;
+  padding: 0;
+  white-space: nowrap;
+
+  .question--editor-actions-delete,
+  .question--editor-actions-edit {
+    box-sizing: border-box;
+    font-size: .9em;
+    display: inline-block;
+    width: 48%;
+
+    @include breakpoint($breakpoint-4) {
+      float: right;
+      max-width: 11em;
+    }
+
+    a {
+      color: $white;
+      text-decoration: none;
+    }
+  }
+
+  .question--editor-actions-delete {
+    @extend .button--warning;
+  }
+
+  .question--editor-actions-edit {
+    @extend .button--neutral;
+
+    &:last-child {
+      margin-right: .5em;
+    }
+  }
+}
+
+
+/* Questions list on user page
+   ================================================================================================================== */
+.question--user-page-nodes-element {
+  margin-bottom: 1em;
+  border-bottom: 1px solid $border-color;
+  padding-bottom: 1em;
+
+  &:last-child {
+    @include reset-element-spacing();
+  }
+}
+
+.question--number-of-comments {
+  @extend .search-result--comments;
+}
+
+.question--user-page-nodes-new {
+  @extend %tag;
+}

@@ -1,0 +1,83 @@
+<?php
+/**
+ * @file
+ * Code for the Loop example content feature.
+ */
+
+include_once 'loop_example_content.features.inc';
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_install().
+ */
+function loop_example_content_install() {
+  // Create example users.
+  loop_example_content_create_example_users();
+}
+
+/**
+ * Create example users. 5 of its cind.
+ */
+function loop_example_content_create_example_users() {
+
+  // Build user array. Prepared for extension.
+  $users = array(
+    'coordinator' => array(
+      'roles' => array(
+        4 => 'documentation coordinator'
+      ),
+      'mail' => 'rfrey@aarhus.dk',
+      'field_job_title' => array('und' => array(array('value' => 'Title'))),
+      'field_first_name' => array('und' => array(array('value' => 'First name'))),
+      'field_last_name' => array('und' => array(array('value' => 'Last name'))),
+      'field_profession' => array('und' => array(array('tid' => 47))),
+    ),
+    'manager' => array(
+      'roles' => array(
+        5 => 'manager'
+      ),
+      'mail' => 'brstj@aarhus.dk',
+      'field_job_title' => array('und' => array(array('value' => 'Title'))),
+      'field_first_name' => array('und' => array(array('value' => 'First name'))),
+      'field_last_name' => array('und' => array(array('value' => 'Last name'))),
+      'field_profession' => array('und' => array(array('tid' => 9))),
+    ),
+    'testuser1' => array(
+      'mail' => 'testuser1@example.com',
+      'field_job_title' => array('und' => array(array('value' => 'Title'))),
+      'field_first_name' => array('und' => array(array('value' => 'First name'))),
+      'field_last_name' => array('und' => array(array('value' => 'Last name'))),
+      'field_profession' => array('und' => array(array('tid' => 27))),
+    ),
+    'testuser2' => array(
+      'mail' => 'testuser2@example.com',
+      'field_job_title' => array('und' => array(array('value' => 'Title'))),
+      'field_first_name' => array('und' => array(array('value' => 'First name'))),
+      'field_last_name' => array('und' => array(array('value' => 'Last name'))),
+      'field_profession' => array('und' => array(array('tid' => 38))),
+    ),
+    'testuser3' => array(
+      'mail' => 'testuser3@example.com',
+      'field_job_title' => array('und' => array(array('value' => 'Title'))),
+      'field_first_name' => array('und' => array(array('value' => 'First name'))),
+      'field_last_name' => array('und' => array(array('value' => 'Last name'))),
+      'field_profession' => array('und' => array(array('tid' => 41))),
+    ),
+  );
+
+  foreach ($users as $username => $user) {
+    $fields = array(
+      'name' => $username,
+      'pass' => $username,
+      'status' => 1,
+      'init' => $user['mail'],
+    );
+
+    $fields = array_merge($fields, $user);
+
+    // Save the user.
+    user_save(NULL, $fields);
+  }
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="http://twitter.github.io/typeahead.js/css/examples.css" media="all" />
+  <script src="/profiles/loop/modules/contrib/jquery_update/replace/jquery/1.9/jquery.min.js?v=1.9.1"></script>
+  <script src="/profiles/loop/modules/features/loop_search/hogan-2.0.0.js"></script>
+  <script src="/profiles/loop/modules/features/loop_search/typeahead.js"></script>
+  <script type="text/javascript">
+    jQuery(document).ready(function($) {
+      jQuery('.typeahead').typeahead(
+        {
+          // The autocomplete url.
+          remote: 'http://loop.local/loop_search_autocomplete' + '/%QUERY',
+
+          // Name of search.
+          name: 'search',
+
+          // The template we are building suggestion list from.
+          template: [
+            '<p class="repo-link">{{link}}</p>',
+            '<p class="repo-desc">{{value}}</p>',
+            '<p class="repo-click">{{suggestion}}</p>'
+          ].join(''),
+
+          // Template enigne.
+          engine: Hogan
+        }
+      );
+    });
+  </script>
+</head>
+<body>
+<h1>Typeahead test</h1>
+<input type="text" placeholder="countries" class="typeahead tt-query" style="position: relative; vertical-align: top; background-color: transparent;">
+</body>
+</html>

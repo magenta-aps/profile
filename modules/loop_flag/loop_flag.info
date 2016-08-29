@@ -1,0 +1,13 @@
+name = Loop flag
+description = Holds flags for ranking, and marking content inappropriate
+core = 7.x
+package = Loop
+version = 7.x-1.0
+project = loop_flag
+dependencies[] = comment
+dependencies[] = flag
+dependencies[] = message_subscribe
+features[features_api][] = api:2
+features[flag][] = inappropriate_comment
+features[flag][] = inappropriate_content
+features[flag][] = ranking

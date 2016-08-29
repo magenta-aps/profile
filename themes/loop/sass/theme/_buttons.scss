@@ -1,0 +1,105 @@
+/**
+ * Buttons
+ *
+ * @author magnify
+ */
+
+
+ %button {
+  display: inline-block;
+  font-size: 1.25em;
+  margin: 0 0.5em 0.5em 0;
+  padding: .4em 1.5em .5em;
+  position: relative;
+
+  cursor: pointer;
+  line-height: 150%;
+  text-align: center;
+  vertical-align: middle;
+
+  &:focus,
+  &:hover,
+  &:active {
+    text-decoration: none;
+  }
+
+  &:last-child {
+    margin: 0 0 0.5em;
+  }
+
+  @include border-radius($border-radius);
+}
+
+.button--action {
+  @extend %button;
+
+  background-color: $green-light;
+  border: 1px solid $green;
+  color: $white;
+
+  @include text-shadow(1px 1px 0 darken($green, 10%));
+
+  &:link,
+  &:visited {
+    color: $white;
+    text-decoration: none;
+  }
+
+  &:hover {
+    background-color: $green;
+  }
+}
+
+.button--neutral {
+  @extend %button;
+
+  background-color: $gray-darker;
+  border: 1px solid $gray-darkest;
+  color: $white;
+
+  @include text-shadow(1px 1px 0 darken($gray-darker, 10%));
+
+  &:link,
+  &:visited {
+    color: $white;
+    text-decoration: none;
+  }
+
+  &:hover {
+    background-color: darken($gray-darkest, 10%);
+  }
+}
+
+.button--warning {
+  @extend %button;
+
+  background-color: $red;
+  border: 1px solid darken($red, 10%);
+  color: $white;
+
+  @include text-shadow(1px 1px 0 darken($red, 20%));
+
+  &:link,
+  &:visited {
+    color: $white;
+    text-decoration: none;
+  }
+
+  &:hover {
+    background-color: darken($red, 10%);
+  }
+}
+
+.button--deactivated {
+  background-color: $gray-light;
+  border: 1px solid $gray;
+  color: $white;
+
+  @include text-shadow(1px 1px 0 darken($gray, 10%));
+
+  &:link,
+  &:visited {
+    color: $gray-dark;
+    text-decoration: none;
+  }
+}

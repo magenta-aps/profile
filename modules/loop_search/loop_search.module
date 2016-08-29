@@ -1,0 +1,200 @@
+<?php
+
+/**
+ * @file
+ * Auto-complete Apache Solr search module.
+ */
+
+include_once 'loop_search.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function loop_search_menu() {
+  $items['loop_search_nodes'] = array(
+    'title' => 'List nodes in JSON format',
+    'page callback' => 'loop_search_nodes',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  $items['loop_search/%/%'] = array(
+    'title' => 'Search nodes in JSON format',
+    'page callback' => 'loop_search_callback',
+    'page arguments' => array(1, 2),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Perform a search using search API (e.g. SOLR).
+ *
+ * Output results in JSON format.
+ *
+ * @param string $content_type
+ *   The content type to search on.
+ * @param string $terms
+ *   The search terms to use for the query.
+ * @throws \SearchApiException
+ */
+function loop_search_callback($content_type, $terms) {
+  // Create a query against the default Loop search index.
+  $query = search_api_query('post');
+
+  // Filter by content type.
+  $query_filter = $query->createFilter();
+  $query_filter->condition('type', $content_type);
+  $query->filter($query_filter);
+
+  // Add the search terms to the query.
+  $query->keys($terms);
+
+  // Execute the query.
+  $query_result = $query->execute();
+
+  $data = array();
+
+  // Build an array of results from the query results.
+  foreach ($query_result['results'] as $result) {
+    $node = $result['entity'];
+    $data[] = array(
+      // For better search, use strtolower.
+      'value' => strtolower(trim(trim($node->title), '"')),
+      // Fine human output.
+      'title' => trim($node->title),
+      // Use internal path.
+      'link' => '/' . drupal_get_path_alias('node/' . $node->nid),
+      // For dupDetector.
+      'id' => $node->nid,
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Implements hook_search_api_solr_query_alter().
+ */
+function loop_search_search_api_solr_query_alter(array &$call_args, SearchApiQueryInterface $query) {
+  // Set the "minimum should match" parameter to allow searching for phrases.
+  // At least this many words must be present in the Solr-document to be
+  // included in the results.
+  //
+  // See https://wiki.apache.org/solr/ExtendedDisMax
+  $call_args['params']['mm'] = 1;
+}
+
+/**
+ * Return every node of type post in JSON format.
+ *
+ * Outputs JSON object.
+ */
+function loop_search_nodes() {
+  // Select nodes.
+  $nodes = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('status', 1)
+    ->condition('type', 'post')
+    ->execute();
+
+  // Build nodes.
+  $data = array();
+  foreach ($nodes as $node) {
+    $data[] = array(
+      // For better search, use strtolower.
+      'value' => strtolower(trim(trim($node->title), '"')),
+      // Fine human output.
+      'title' => trim($node->title),
+      // Use internal path.
+      'link' => '/' . drupal_get_path_alias('node/' . $node->nid),
+      // For dupDetector.
+      'id' => $node->nid,
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Implements hook_init().
+ *
+ * Include search JS for every page load.
+ */
+function loop_search_init() {
+  global $user;
+
+  // Check if it's a registered user.
+  if ($user->uid > 0) {
+    drupal_add_js(drupal_get_path('module', 'loop_search') . '/js/handlebars-v1.2.0.js');
+    drupal_add_js(drupal_get_path('module', 'loop_search') . '/js/typeahead.bundle.js');
+    drupal_add_js(drupal_get_path('module', 'loop_search') . '/js/loop_search.js', array(
+      'scoop' => 'header',
+      'weight' => 1000,
+    ));
+    drupal_add_js(drupal_get_path('module', 'loop_search') . '/js/search.js');
+    drupal_add_js(drupal_get_path('module', 'loop_search') . '/js/placeholders.js');
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_search_theme() {
+  return array(
+    'loop_search_theme' => array(
+      'render element' => 'form',
+      'template' => 'loop-search--form',
+    ),
+  );
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Alter search form for Twitter Typeahead.
+ */
+function loop_search_form_search_api_page_search_form_default_alter(&$form) {
+  // Fetch search page id.
+  $default_page_id = db_query("SELECT id FROM {search_api_page} WHERE index_id = 'post'")->fetchField();
+
+  $form['#attributes']['class'] = 'js--search';
+
+  // Add class to submit.
+  $form['submit_' . $default_page_id]['#attributes']['class'][] = 'typeahead-block--button';
+
+  // Inline styling needed for Twitter Typeahead.
+  $form['keys_' . $default_page_id]['#attributes']['style'] = "position: relative; vertical-align: top; background-color: transparent;";
+
+  // Default placeholder.
+  $form['keys_' . $default_page_id]['#attributes']['placeholder'] = t('E.g. "How do you document a subject"');
+
+  // Yet again, some id and classes for Twitter Typehead.
+  $form['keys_' . $default_page_id]['#attributes']['id'][] = 'typeahead';
+  $form['keys_' . $default_page_id]['#attributes']['class'][] = 'typeahead';
+  $form['keys_' . $default_page_id]['#attributes']['class'][] = 'tt-query';
+
+  // Figure out if we need a default value.
+  $arg = arg();
+  if ($arg[0] == "node" && is_numeric($arg[1])) {
+    // Load correct node.
+    $node = node_load($arg[1]);
+    if ($node->type == 'post') {
+      // Load entity wrapper.
+      $wrapper = entity_metadata_wrapper('node', $node);
+
+      // Get description field.
+      $description = $wrapper->field_description->value();
+
+      // Verify its a string.
+      if (is_string($description)) {
+        // Change default value.
+        $form['keys_' . $default_page_id]['#default_value'] = $description;
+      }
+    }
+  }
+}

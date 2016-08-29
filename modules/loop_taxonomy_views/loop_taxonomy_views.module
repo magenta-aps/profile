@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop taxonomy views feature.
+ */
+
+include_once 'loop_taxonomy_views.features.inc';

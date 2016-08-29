@@ -1,0 +1,756 @@
+<?php
+/**
+ * @file
+ * Code for the Loop External data functionality.
+ */
+
+include_once 'loop_external_data.features.inc';
+include 'parser.php';
+include 'iParser.inc';
+include 'LoopNode.php';
+include 'LoopIndex.php';
+include 'Leaf.php';
+include 'Tree.php';
+
+/**
+ * Implements hook_menu().
+ */
+function loop_external_data_menu() {
+  $items = array();
+
+  $items['index/%node'] = array(
+    'title' => 'Node',
+    'page callback' => 'loop_external_data_index',
+    'access arguments' => array('access content'),
+    'page arguments' => array(1),
+    'type' => MENU_SUGGESTED_ITEM,
+  );
+  $items['add_indexes'] = array(
+    'title' => 'Add indexes from a-z',
+    'page callback' => '_loop_external_data_add_indexes',
+    'access callback' => array(1),
+  );
+
+  $items['loop_external_data/%'] = array(
+    'title' => 'List documents in JSON format',
+    'page callback' => 'loop_external_data_documents',
+    'page arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_init().
+ */
+function loop_external_data_init() {
+  // Check if it's a registered user.
+  if (user_is_logged_in()) {
+    drupal_add_js(drupal_get_path('module', 'loop_external_data') . '/js/search.js', array('weight' => 2));
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function loop_external_data_form_alter(&$form, &$form_state, $form_id) {
+  // Hide the Tree overview from the form.
+  if ($form_id === 'index_node_form') {
+    $form['field_tree']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Find documents (leafs) and output as JSON.
+ *
+ * @param string $scope
+ *   Comma separated list to search for.
+ */
+function loop_external_data_documents($scope) {
+  // Explode to array.
+  $titles = explode(',', $scope);
+
+  // Title filter.
+  $or = db_or();
+  foreach ($titles as $title) {
+    $or->condition("title", $title . "%", 'LIKE');
+  }
+
+  // Fetch node ID and title.
+  $nodes = db_select('node', 'n')
+    ->fields('n', array('nid', 'title'))
+    ->condition('type', 'leaf')
+    ->condition('status', 1)
+    ->condition($or)
+    ->execute();
+
+  $data = array();
+  foreach ($nodes as $node) {
+    $index = _loop_external_data_find_index($node);
+    $data[] = array(
+      // For better search, use strtolower().
+      'value' => strtolower(trim(trim($node->title), '"')),
+      // Fine human output.
+      'title' => trim($node->title) . " (" . trim($index->title) . ")",
+      // Use internal path.
+      'link' => '/' . drupal_get_path_alias('node/' . $node->nid),
+    );
+  }
+
+  // Return as JSON.
+  drupal_json_output($data);
+}
+
+/**
+ * Adds indexes with names from prefixed by A-Z.
+ */
+function _loop_external_data_add_indexes() {
+  $path = 'public://index_file/test/';
+  file_prepare_directory($path, FILE_CREATE_DIRECTORY);
+
+  $alphabet = array(
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+  );
+
+  if (!$da = file_get_contents(drupal_realpath('public://external_data/dita.zip'))) {
+    throw new Exception("Error opening file");
+  }
+
+  for ($i = 0; $i <= 25; $i++) {
+    $name = $alphabet[$i] . " Index";
+
+    if (!$file = file_save_data($da, 'public://index_file/dita.zip', FILE_EXISTS_RENAME)) {
+      throw new Exception("Error saving file");
+    }
+
+    $node = new Stdclass();
+    $node->type = 'index';
+    $node->language = LANGUAGE_NONE;
+    $node->status = 1;
+    $node->uid = 1;
+    $node->title = $name;
+    $node->field_file = array(
+      'und' => array(
+        array(
+          'fid' => $file->fid,
+          'display' => 1,
+          'description' => "",
+          'upload_button' => "Upload",
+          'remove_button' => "Remove",
+          'upload' => "",
+        ),
+      ),
+    );
+    node_save($node);
+  }
+
+  return "Added indexes from A - Z";
+}
+
+/**
+ * Implements hook_theme().
+ */
+function loop_external_data_theme($existing, $type, $theme, $path) {
+  return array(
+    'loop_external_data_index' => array(
+      'variables' => array(
+        'forest' => NULL,
+      ),
+      'template' => 'templates/loop-external-data-index',
+    ),
+    'loop_external_data_trees' => array(
+      'variables' => array(
+        'title' => NULL,
+        'nid' => NULL,
+        'childs' => array(),
+      ),
+      'template' => 'templates/loop-external-data-trees',
+    ),
+    'loop_external_data_leaf' => array(
+      'variables' => array(
+        'title' => NULL,
+        'nid' => NULL,
+        'body' => NULL,
+      ),
+      'template' => 'templates/loop-external-data-leaf',
+    ),
+    'loop_external_data_dropdown_block' => array(
+      'variables' => array(
+        'forest' => NULL,
+      ),
+      'template' => 'templates/loop-external-data-dropdown-block',
+    ),
+    'loop_external_data_dropdown_trees' => array(
+      'variables' => array(
+        'title' => NULL,
+        'nid' => NULL,
+        'childs' => NULL,
+      ),
+      'template' => 'templates/loop-external-data-dropdown-trees',
+    ),
+    'loop_external_data_dropdown_leaf' => array(
+      'variables' => array(
+        'title' => NULL,
+        'nid' => NULL,
+        'childs' => NULL,
+      ),
+      'template' => 'templates/loop-external-data-dropdown-leaf',
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function loop_external_data_block_info() {
+  return array(
+    'index' => array(
+      'info' => t('Index'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function loop_external_data_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'index':
+      $node_id = (int) arg(1);
+      if ((is_int($node_id)) && ($node_id > 0)) {
+        drupal_add_js(drupal_get_path('module', 'loop_external_data') . '/js/index.js');
+
+        $node = node_load($node_id);
+        $node = _loop_external_data_find_index($node);
+        $block['content'] = array(
+          '#theme' => 'loop_external_data_dropdown_block',
+          '#forest' => _loop_external_data_build_dropdown($node),
+        );
+      }
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Internal function to build fully tree recursive.
+ *
+ * @param mixed $item
+ *   Index/tree/leaf object.
+ *
+ * @return array
+ *   Fully recursive tree.
+ */
+function _loop_external_data_build_dropdown($item) {
+  $wrapper = entity_metadata_wrapper('node', $item);
+
+  $items = array();
+
+  switch ($item->type) {
+    case 'index':
+      $trees = $wrapper->field_tree->value();
+      $items['index_title'] = $item->title;
+      foreach ($trees as $tree) {
+        $items['childs'][] = _loop_external_data_build_dropdown($tree);
+        $items['#theme'] = 'loop_external_data_dropdown_trees';
+      }
+      break;
+
+    case 'tree':
+      $items['#title'] = $item->title;
+      $items['#nid'] = $item->nid;
+      $leafs = $wrapper->field_leaf->value();
+      foreach ($leafs as $child) {
+        if ($child->type == 'tree') {
+          $items['#childs'][] = _loop_external_data_build_dropdown($child);
+          $items['#theme'] = 'loop_external_data_dropdown_trees';
+        }
+        else {
+          $new_child['#theme'] = 'loop_external_data_dropdown_leaf';
+          $new_child['#title'] = $child->title;
+          $new_child['#nid'] = $child->nid;
+          $items['#childs'][] = $new_child;
+          $items['#theme'] = 'loop_external_data_dropdown_trees';
+        }
+      }
+      break;
+  }
+
+  return $items;
+}
+
+/**
+ * Internal function to find index.
+ *
+ * @param mixed $item
+ *   Item.
+ *
+ * @return bool|mixed
+ *   Returns index.
+ */
+function _loop_external_data_find_index($item) {
+  // Find index.
+  if ($item->type != 'index' && $item->type !== 'post') {
+    $tree = db_select('field_data_field_leaf', 'l')
+      ->fields('l', array('entity_id'))
+      ->condition('field_leaf_target_id', $item->nid)
+      ->execute()
+      ->fetchAssoc();
+
+    if ($tree == FALSE) {
+      $tree = db_select('field_data_field_tree', 'l')
+        ->fields('l', array('entity_id'))
+        ->condition('field_tree_target_id', $item->nid)
+        ->execute()
+        ->fetchAssoc();
+    }
+
+    $item = node_load($tree['entity_id']);
+    return _loop_external_data_find_index($item);
+  }
+  else {
+    return $item;
+  }
+}
+
+/**
+ * Build render array with index.
+ *
+ * @param mixed $node
+ *   The Index node.
+ *
+ * @return array
+ *   Array ready to render.
+ */
+function loop_external_data_index($node) {
+  if ($node->type == 'index') {
+    drupal_set_title($node->title);
+    $forest = _loop_external_data_build_tree($node);
+
+    // Return render array.
+    return array(
+      '#theme' => 'loop_external_data_index',
+      '#forest' => $forest,
+    );
+  }
+  else {
+    return array(
+      '#theme' => 'loop_external_data_index',
+      '#forest' => array(),
+    );
+  }
+}
+
+/**
+ * Internal function to build fully tree recursive.
+ *
+ * @param mixed $item
+ *   Index/tree/leaf object.
+ *
+ * @return array
+ *   Fully recursive tree.
+ */
+function _loop_external_data_build_tree($item) {
+  $wrapper = entity_metadata_wrapper('node', $item);
+
+  $items = array();
+
+  switch ($item->type) {
+    case 'index':
+      $trees = $wrapper->field_tree->value();
+      foreach ($trees as $tree) {
+        $items['#childs'][] = _loop_external_data_build_tree($tree);
+        $items['#theme'] = 'loop_external_data_trees';
+      }
+      break;
+
+    case 'tree':
+      $items['#title'] = $item->title;
+      $items['#nid'] = $item->nid;
+      $leafs = $wrapper->field_leaf->value();
+      foreach ($leafs as $child) {
+        if ($child->type == 'tree') {
+          $items['#childs'][] = _loop_external_data_build_tree($child);
+          $items['#theme'] = 'loop_external_data_trees';
+        }
+        else {
+          $new_child['#theme'] = 'loop_external_data_leaf';
+          $new_child['#title'] = $child->title;
+          $display = array('label' => 'hidden');
+          $new_child['#body'] = field_view_field('node', $child, 'body', $display);
+          $new_child['#nid'] = $child->nid;
+          $items['#childs'][] = $new_child;
+          $items['#theme'] = 'loop_external_data_trees';
+        }
+      }
+      break;
+  }
+
+  return $items;
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function loop_external_data_node_insert($node) {
+  if ($node->type == 'index') {
+    _loop_external_data_file_load($node);
+  }
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function loop_external_data_node_delete($node) {
+  if ($node->type == 'index') {
+    // Remove leafs and trees.
+    $trees = _loop_external_data_build_tree($node);
+    _loop_external_data_delete_tree($trees);
+
+    // Remove public://external_data/{nid} directory.
+    foreach (file_scan_directory('public://external_data/' . $node->nid, '*.*') as $file) {
+      // Remove from file_managed table.
+      $result = db_query('SELECT f.fid FROM {file_managed} f WHERE f.uri = :uri', array(':uri' => $file->uri));
+      $result = $result->fetchAssoc();
+      file_delete(file_load($result['fid']));
+    }
+    file_unmanaged_delete_recursive('public://external_data/' . $node->nid . '/');
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function loop_external_data_node_update($node) {
+  if (!isset($_SESSION['loop_external_data_node_update'])) {
+    if (($node->created < $node->changed) && ($node->type == 'index')) {
+      $_SESSION['loop_external_data_node_update'] = time() + 10;
+      // This is an update, remove old data.
+      $trees = _loop_external_data_build_tree($node);
+      _loop_external_data_delete_tree($trees);
+
+      // Build new data.
+      _loop_external_data_file_load($node);
+    }
+  }
+  else {
+    if (time() < $_SESSION['loop_external_data_node_update']) {
+      unset ($_SESSION['loop_external_data_node_update']);
+    }
+  }
+}
+
+/**
+ * Internal function.
+ *
+ * Recursively deletes a tree of nodes.
+ *
+ * @param mixed $trees
+ *   The trees to delete.
+ */
+function _loop_external_data_delete_tree($trees) {
+  if ($trees['#theme'] == 'loop_external_data_trees') {
+    foreach ($trees['#childs'] as $child) {
+      _loop_external_data_delete_tree($child);
+    }
+    if (isset($trees['#nid'])) {
+      node_delete($trees['#nid']);
+    }
+  }
+  elseif ($trees['#theme'] == 'loop_external_data_leaf') {
+    node_delete($trees['#nid']);
+  }
+}
+
+/**
+ * Load uploaded file and send it to our parser.
+ *
+ * @param mixed $node
+ *   Index node.
+ */
+function _loop_external_data_file_load($node) {
+  $wrapper = entity_metadata_wrapper('node', $node);
+  $file_fid = $wrapper->field_file->value();
+
+  $file = file_load($file_fid['fid']);
+
+  // Set up parser and parse the zip file.
+  $parser = new Parser();
+  $data = $parser->parse(drupal_realpath($file->uri), drupal_realpath('public://index_file/' . $file->fid), $node->nid);
+
+  // Check if data is returned.
+  if (!empty($data)) {
+    // Send data and node id to parser.
+    _loop_external_data_parser($data, $node->nid);
+  }
+
+  // Remove the unzip directory.
+  file_unmanaged_delete_recursive('public://index_file/' . $file->fid . '/');
+}
+
+/**
+ * Recursive data parser.
+ *
+ * @param mixed $data
+ *   Index/tree/leaf object.
+ * @param int $parent
+ *   Parent node ID.
+ * @param mixed $references
+ *   Array of references.
+ */
+function _loop_external_data_parser($data, $parent = NULL, &$references = NULL) {
+  // Figure out what type we got.
+  $class_type = get_class($data);
+  switch ($class_type) {
+    case 'LoopIndex':
+      _loop_external_data_parser_index($data, $parent);
+      break;
+
+    case 'Tree':
+      _loop_external_data_parser_tree($data, $references, $parent);
+      break;
+
+    case 'Leaf':
+      _loop_external_data_parser_leaf($data, $references, $parent);
+      break;
+  }
+}
+
+/**
+ * Parse index object.
+ *
+ * @param mixed $index
+ *   Index object.
+ * @param mixed $parent
+ *   Parent node.
+ */
+function _loop_external_data_parser_index($index, $parent) {
+  $children = $index->getChildren();
+  $references = $index->getReferences();
+
+  if (!empty($children)) {
+    foreach ($children as $child) {
+      _loop_external_data_parser($child, $parent, $references);
+    }
+
+    // Fix references.
+    foreach ($children as $child) {
+      $class_type = get_class($child);
+      switch ($class_type) {
+        case 'Tree':
+          _loop_external_data_fix_references_tree($child, $references);
+          break;
+
+        case 'Leaf':
+          _loop_external_data_fix_references_leaf($child, $references);
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Fixes references for a Tree.
+ *
+ * @param mixed $loop_tree
+ *   Tree/Leaf.
+ * @param mixed $references
+ *   Array of references.
+ */
+function _loop_external_data_fix_references_tree($loop_tree, $references) {
+  $children = $loop_tree->getChildren();
+  foreach ($children as $child) {
+    $class_type = get_class($child);
+    switch ($class_type) {
+      case 'Tree':
+        _loop_external_data_fix_references_tree($child, $references);
+        break;
+
+      case 'Leaf':
+        _loop_external_data_fix_references_leaf($child, $references);
+        break;
+    }
+  }
+}
+
+/**
+ * Fixes the references for the body of a Leaf.
+ *
+ * Uses the $references array to make the links between nodes.
+ *
+ * @param Leaf $loop_leaf
+ *   Leaf.
+ * @param mixed $references
+ *   Array of references.
+ *
+ * @throws Exception
+ */
+function _loop_external_data_fix_references_leaf($loop_leaf, $references) {
+  $node = node_load($loop_leaf->getDrupalNID());
+
+  $wrapper = entity_metadata_wrapper('node', $node);
+  $body = $wrapper->body->value();
+
+  $xml = new DOMDocument('1.0', 'utf-8');
+  libxml_use_internal_errors(TRUE);
+  if (!$xml->loadHTML($body['value'])) {
+    throw new Exception("Error loading Leaf body.");
+  }
+  libxml_clear_errors();
+  $xpath = new DOMXPath($xml);
+
+  $as = $xpath->query('//a');
+  if ($as->length == 0) {
+    return;
+  }
+
+  foreach ($as as $a) {
+    $href = $a->getAttribute('href');
+
+    $ref = $references[$href];
+    if (isset($ref)) {
+      $new_path = '/node/' . $ref['nid'];
+
+      $a->setAttribute('href', $new_path);
+      $a->setAttribute('class', 'external-data-link');
+    }
+  }
+
+  $body = $xpath->query('//body');
+
+  $body_arr = array(
+    'value' => $xml->saveXML($body->item(0)),
+    'format' => 'editor',
+  );
+
+  $wrapper->body = $body_arr;
+  $wrapper->save();
+}
+
+/**
+ * Parse tree object.
+ *
+ * Creates a tree node and recursively parse children.
+ *
+ * @param mixed $tree
+ *   Tree object.
+ * @param mixed $references
+ *   Array of references.
+ * @param mixed $parent
+ *   Parent node.
+ */
+function _loop_external_data_parser_tree($tree, &$references, $parent = NULL) {
+  global $user;
+  $node = new Stdclass();
+
+  $node->type = 'tree';
+  $node->language = LANGUAGE_NONE;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->title = $tree->getTitle();
+
+  node_save($node);
+
+  $children = $tree->getChildren();
+  foreach ($children as $child) {
+    _loop_external_data_parser($child, $node->nid, $references);
+  }
+
+  _loop_external_data_add_child($parent, $node);
+}
+
+/**
+ * Parse leaf object.
+ *
+ * Creates a leaf node.
+ *
+ * @param mixed $leaf
+ *   Leaf object.
+ * @param array $references
+ *   Array of references.
+ * @param mixed $parent
+ *   Parent node.
+ */
+function _loop_external_data_parser_leaf($leaf, &$references, $parent = NULL) {
+  global $user;
+  $node = new Stdclass();
+
+  $node->type = 'leaf';
+  $node->language = LANGUAGE_NONE;
+  $node->status = 1;
+  $node->uid = $user->uid;
+  $node->title = $leaf->getTitle();
+
+  node_save($node);
+
+  // If this leaf matches one of the references, set node id of the reference.
+  for ($i = 0; $i < count($references); $i++) {
+    if ($references[$i]['leafID'] == $leaf->getLeafID()) {
+      $references[$i]['nid'] = $node->nid;
+    }
+  }
+
+  // Add Node ID to leaf.
+  $leaf->setDrupalNID($node->nid);
+
+  $wrapper = entity_metadata_wrapper('node', $node);
+  $wrapper->body = array(
+    'value' => $leaf->getBody(),
+    'format' => 'editor',
+  );
+  $wrapper->save();
+
+  _loop_external_data_add_child($parent, $node);
+}
+
+/**
+ * Adds nodes to parent.
+ *
+ * @param mixed $node
+ *   Node object.
+ * @param mixed $child
+ *   Node object.
+ */
+function _loop_external_data_add_child($node, $child) {
+  $parent_node = node_load($node);
+  $wrapper = entity_metadata_wrapper('node', $parent_node);
+  if ($parent_node->type == 'tree') {
+    $wrapper->field_leaf[] = intval($child->nid);
+  }
+  elseif ($parent_node->type == 'index') {
+    $wrapper->field_tree[] = intval($child->nid);
+  }
+
+  $wrapper->save();
+}

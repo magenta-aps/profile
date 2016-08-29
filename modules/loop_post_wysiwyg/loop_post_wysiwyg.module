@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Post WYSIWYG feature.
+ */
+
+include_once 'loop_post_wysiwyg.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function loop_post_wysiwyg_form_node_form_alter(&$form, &$form_state) {
+  if ($form['type']['#value'] == 'post') {
+    $field_description_language = $form['field_description']['#language'];
+    $form['field_description'][$field_description_language]['0']['#format'] = 'editor';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * The Loop theme has been modified to pick up on this global variable;
+ * previously, it was setting $form['comment_body'][LANGUAGE_NONE][0]['#wysiwyg'] to FALSE
+ */
+function loop_post_wysiwyg_form_comment_form_alter(&$form) {
+  $GLOBALS['use_wysiwyg_comments'] = $form['comment_body'][LANGUAGE_NONE][0]['#wysiwyg'] = TRUE;
+}
+
+/**
+ * Implements hook_enable().
+ */
+function loop_post_wysiwyg_enable() {
+  secure_permissions_rebuild();
+}
+
+/**
+ * Implements hook_disable().
+ */
+function loop_post_wysiwyg_disable() {
+  secure_permissions_rebuild();
+}
+
+/**
+ * Implements hook_secure_permissions.
+ *
+ * Allows authenticated users to use the text format "editor", so that they
+ * can use the WYSIWYG editor.
+ *
+ * @param $role
+ *   The role for which the permissions are being requested.
+ *
+ * @return
+ *   An array defining all the permissions for the site.
+ */
+function loop_post_wysiwyg_secure_permissions($role) {
+  $permissions = array('authenticated user' => 'use text format editor');
+  if (isset($permissions[$role])) {
+    return $permissions[$role];
+  }
+}

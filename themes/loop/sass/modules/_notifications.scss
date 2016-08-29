@@ -1,0 +1,100 @@
+/**
+ *
+ * Notifications
+ *
+ */
+
+
+%notification {
+  display: inline-block;
+  height: 2em;
+  // Tweaking width for Android.
+  width: 2.05em;
+
+  background-color: $red;
+  color: $white;
+  font-size: 65%;
+  font-weight: bold;
+  // Tweaking line height for Android.
+  line-height: 1.95em;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: top;
+
+  &:link,
+  &:visited {
+    text-decoration: none;
+  }
+
+  @include border-radius(100%);
+  @include box-sizing(border-box);
+}
+
+.notification {
+  @extend %notification;
+
+  position: absolute;
+  top: -.5em;
+  right: -.5em;
+}
+
+.notification--inline {
+  @extend %notification;
+}
+
+.notification--empty {
+  padding-top: .5em;
+
+  text-align: center;
+}
+
+.notification--user-subscriptions {
+  th {
+    padding-bottom: 1em;
+  }
+
+  tr {
+    border-bottom: 1px solid $border-color;
+  }
+
+  .form-type-checkbox {
+    border: 0;
+    margin-bottom: 0;
+  }
+
+  .links {
+    list-style: none;
+    padding: 0;
+  }
+
+  .empty {
+    padding: 1em;
+  }
+}
+
+.notification--list-header {
+  @include element-spacing(.5em);
+
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.notification--list-item {
+  position: relative;
+
+  line-height: 1.75em;
+
+  @include element-spacing(1em);
+
+  &:last-child {
+    border-bottom: 0;
+    // Needed to vertical align the icon.
+    margin-bottom: -1em;
+    padding-bottom: 1em;
+  }
+}
+
+.notification--list-text {
+  display: block;
+  padding-right: 1.75em;
+}

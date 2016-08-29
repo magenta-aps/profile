@@ -1,0 +1,181 @@
+/**
+ * Icons
+ *
+ * Generated with http://fontello.com/
+ *
+ */
+
+@font-face {
+  font-family: 'loop-icons';
+  src: url('../icons/loop-icons.eot?24139454');
+  src: url('../icons/loop-icons.eot?24139454#iefix') format('embedded-opentype'),
+  url('../icons/loop-icons.woff?24139454') format('woff'),
+  url('../icons/loop-icons.ttf?24139454') format('truetype'),
+  url('../icons/loop-icons.svg?24139454#loop-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Chrome hack: SVG is rendered more smooth in Windozze. 100% magic, uncomment if you need it. */
+/* Note, that will break hinting! In other OS-es font will be not as sharp as it could be */
+/*
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: 'loop-icons';
+    src: url('../font/loop-icons.svg?48744896#loop-icons') format('svg');
+  }
+}
+*/
+
+[class^="icon-"]:before, [class*=" icon-"]:before {
+  font-family: "loop-icons";
+  font-style: normal;
+  font-weight: normal;
+  speak: none;
+
+  display: inline-block;
+  text-decoration: inherit;
+  width: 1em;
+  margin-right: .2em;
+  text-align: center;
+
+  /* For safety - reset parent styles, that can break glyph codes */
+  font-variant: normal;
+  line-height: 1;
+  text-transform: none;
+}
+
+.icon-check-circled:before { content: '\e80d'; } /* '' */
+.icon-filter:before { content: '\e80c'; } /* '' */
+.icon-check:before { content: '\e804'; } /* '' */
+.icon-cancel-circled:before { content: '\e80b'; } /* '' */
+.icon-thumbs:before { content: '\e805'; } /* '' */
+.icon-search:before { content: '\e803'; } /* '' */
+.icon-loading:before { content: '\e806'; } /* '' */
+.icon-arrow-right-medium:before { content: '\e807'; } /* '' */
+.icon-arrow-right-small:before { content: '\e808'; } /* '' */
+.icon-arrow-right-big:before { content: '\e809'; } /* '' */
+.icon-arrow-down-medium:before { content: '\e802'; } /* '' */
+.icon-comment:before { content: '\e80a'; } /* '' */
+.icon-pencil:before { content: '\e80e'; } /* '' */
+.icon-cancel:before { content: '\e800'; } /* '' */
+.icon-attention:before { content: '\e801'; } /* '' */
+.icon-clock:before { content: '\e810'; } /* '' */
+.icon-alphabetical:before { content: '\e811'; } /* '' */
+.icon-help-circled:before { content: '\e80F'; } /* '' */
+.icon-flag-filled:before { content: '\e812'; } /* '' */
+
+/* Icon shadow classes
+   ================================================================================================================== */
+
+%icon-base {
+  display: inline-block;
+
+  font-family: "loop-icons";
+  line-height: 100%;
+}
+
+%icon-before {
+  margin-right: .35em;
+}
+
+%icon-after {
+  margin-left: .35em;
+}
+
+%icon-check {
+  @extend %icon-base;
+
+  content: '\e804';
+}
+
+%icon-check-circled {
+  @extend %icon-base;
+
+  content: '\e80d';
+}
+
+%icon-like {
+  @extend %icon-base;
+
+  content: '\e805';
+}
+
+%icon-cancel {
+  @extend %icon-base;
+
+  content: '\e800';
+}
+
+%icon-cancel-circled {
+  @extend %icon-base;
+
+  content: '\e80b';
+}
+
+%icon-comment {
+  @extend %icon-base;
+
+  content: '\e80a';
+}
+
+%icon-attention {
+  @extend %icon-base;
+
+  content: '\e801';
+}
+
+%icon-arrow-right-medium {
+  @extend %icon-base;
+
+  content: '\e807';
+}
+
+%icon-arrow-down-medium {
+  @extend %icon-base;
+
+  content: '\e802';
+}
+
+%icon-search {
+  @extend %icon-base;
+
+  content: '\e803';
+}
+
+%icon-filter {
+  @extend %icon-base;
+
+  content: '\e80c';
+}
+
+%icon-pencil {
+  @extend %icon-base;
+
+  content: '\e80e';
+}
+
+%icon-clock {
+  @extend %icon-base;
+
+  content: '\e811';
+}
+
+%icon-alphabetical {
+  @extend %icon-base;
+
+  content: '\e810';
+}
+
+%icon-help-circled {
+  @extend %icon-base;
+
+  content: '\e80f';
+}
+
+
+%icon-flag-filled {
+  @extend %icon-base;
+
+  content: '\e812';
+}

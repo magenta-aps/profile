@@ -1,0 +1,14 @@
+diff --git a/includes/saml_sp.AuthnRequest.inc b/includes/saml_sp.AuthnRequest.inc
+index 16206e4..993ba58 100644
+--- a/includes/saml_sp.AuthnRequest.inc
++++ b/includes/saml_sp.AuthnRequest.inc
+@@ -54,9 +54,6 @@ PROVIDERNAME;
+     <samlp:NameIDPolicy
+         Format="{$nameIDPolicyFormat}"
+         AllowCreate="true" />
+-    <samlp:RequestedAuthnContext Comparison="exact">
+-        <saml:AuthnContextClassRef>{$idpData['AuthnContextClassRef']}</saml:AuthnContextClassRef>
+-    </samlp:RequestedAuthnContext>
+ </samlp:AuthnRequest>
+ AUTHNREQUEST;
+ 

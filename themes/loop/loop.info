@@ -1,0 +1,47 @@
+name = Loop
+description = Default theme for the Loop web application.
+version = VERSION
+core = 7.x
+
+; Regions
+regions[header] = Header
+regions[navigation] = Navigation
+regions[pagetop] = Page Top
+regions[content] = Content
+regions[footer] = Footer
+
+; Scripts
+scripts[] = scripts/mobile-nav.min.js
+scripts[] = scripts/modernizr.min.js
+scripts[] = scripts/chosen.jquery.js
+scripts[] = scripts/use-chosen.min.js
+
+; Stylesheets
+stylesheets[all][] = css/styles.css
+
+; Disable stylesheets
+stylesheets[all][] = user.css
+stylesheets[all][] = views.css
+stylesheets[all][] = system.theme.css
+stylesheets[all][] = flag.css
+stylesheets[all][] = system.menus.css
+stylesheets[all][] = system.messages.css
+stylesheets[all][] = autocomplete_deluxe.css
+stylesheets[all][] = filter.css
+stylesheets[all][] = image.css
+
+; Panels layouts. You can place multiple layouts under the "layouts" folder.
+plugins[panels][layouts] = templates/panels/layouts
+
+dependencies[] = style_settings
+
+; Defaults for the theme configuration
+settings[show_logout_for_regular_users] = true
+settings[show_logout_for_saml_users] = true
+settings[show_breadcrumbs] = false
+settings[header_color] = #41ab51
+settings[header_logo_height] = 3em
+settings[term_background_color] = #ff6138
+settings[term_hover_background_color] = #eb3000
+settings[keyword_background_color] = #007700
+settings[keyword_hover_background_color] = #006600

@@ -1,0 +1,274 @@
+/**
+ *
+ * User profile module
+ *
+ */
+
+
+.user-profile-module--edit-link {
+  font-size: 0.7em;
+}
+
+.user-profile-module--field-group-fieldset {
+  @extend .field-group-fieldset;
+
+  padding: 0.5em 1.5em 1.5em;
+}
+
+.user-profile-module--field-group-fieldset-personal-info {
+  @extend .user-profile-module--field-group-fieldset;
+}
+
+.user-profile-module--personal-info-text {
+  margin-bottom: 1em;
+
+  @include breakpoint(45em) {
+    float: left;
+
+    margin-bottom: 0;
+    width: 60%;
+  }
+}
+
+.user-profile-module--personal-info-image {
+  text-align: center;
+
+  img {
+    margin-bottom: 1em;
+    width: 50%;
+  }
+
+  @include breakpoint(45em) {
+    float: right;
+
+    width: 20%;
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+.user-profile-module--field {
+  position: relative;
+
+  line-height: 1.75em;
+
+  @include element-spacing(1em);
+
+  &:last-child {
+    border-bottom: 0;
+    // Needed to vertical align the icon.
+    margin-bottom: -1em;
+    padding-bottom: 1em;
+  }
+}
+
+.user-profile-module--edit-link {
+  float: right;
+  padding: 0.5em;
+}
+
+// Views or Flag module add a <p> tag that is difficult to override.
+.user-profile-module--field-text,
+.user-profile-module--field-text p {
+  display: inline;
+  padding-right: 1.75em;
+}
+
+.user-profile-module--field-personal-info {
+  @extend .user-profile-module--field;
+
+  border-bottom: 1px solid $border-color;
+}
+
+.user-profile-module--fieldset-legend {
+  @extend .fieldset-legend;
+
+  font-weight: bold;
+}
+
+.user-profile-module--field-label {
+  display: inline-block;
+  font-weight: bold;
+  width: 10em;
+  margin-right: 1em;
+}
+
+.user-profile-module--footer {
+  padding: 2em 1em 0;
+  text-align: center;
+}
+
+
+.user-profile-module--notifications {
+  margin-bottom: 3em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.user-profile--notification-actions {
+  background-color: $gray-lightest;
+  overflow: hidden;
+  height: 0;
+
+  margin-bottom: $margin-bottom;
+
+  @include border-radius($border-radius);
+
+  &.anim-open-notification-tab {
+    @include animation(open-notification-actions 1.5s);
+    animation-fill-mode:forwards;
+    -webkit-animation-fill-mode:forwards;
+  }
+
+  &.anim-close-notification-tab {
+    @include animation(close-notification-actions 1.5s);
+    animation-fill-mode:forwards;
+    -webkit-animation-fill-mode:forwards;
+  }
+}
+
+.user-profile--notification-actions-inner {
+  padding: 1em;
+}
+
+.user-profile--notification-actions--button-remove {
+  float: right;
+}
+
+.user-profile--notification-actions--button--confirm {
+  margin-right: 1em;
+}
+
+.user-profile--answers-label {
+  clear: both;
+  color: $gray;
+  font-size: .7em;
+  float: left;
+  margin-left: 0;
+}
+
+/* Answers count*/
+.user-profile--answers {
+  color: $gray;
+  display: inline-block;
+  text-align: center;
+  width: 4.5em;
+}
+
+.user-profile--best-answers {
+  color: $gray;
+  display: inline-block;
+  margin-left: -4px;
+  text-align: center;
+  width: 4.2em;
+}
+
+.user-profile--answers-count {
+  border: 2px solid $gray;
+  color: $gray;
+  clear: both;
+  float: left;
+  margin-right: 1em;
+  padding: .2em;
+  width: 3.6em;
+
+  &:before {
+    @extend %icon-comment;
+    @extend %icon-before;
+
+    margin-right: .5em;
+  }
+}
+
+.user-profile--answers-best-count {
+  border: 2px solid $gray;
+  color: $gray;
+  clear: both;
+  float: left;
+  padding: .2em;
+  width: 3.6em;
+
+  &:before {
+    @extend %icon-like;
+    @extend %icon-before;
+
+    margin-right: .5em;
+  }
+}
+
+.user-form--password-link {
+  padding-left: 0;
+  list-style: none;
+}
+
+.password-confirm,
+.password-strength-title,
+.password-strength-text,
+.password-strength {
+  color: #737373;
+  float: right;
+  margin-left: .5em;
+
+  .error {
+    color: $red;
+  }
+
+  .ok {
+    color: $green;
+  }
+}
+
+.edit-user--image-fieldset {
+  position: relative;
+
+  height: 15em;
+}
+
+.edit-user--image {
+  position: absolute;
+  top: 3em;
+  left: 0;
+
+  max-height: 12em;
+  width: 25%;
+}
+
+.edit-user--image-buttons {
+  position: relative;
+  top: 50%;
+
+  display: inline-block;
+  margin-left: 25%;
+
+  @include translateY(-50%);
+}
+
+.edit-user--image-button-remove {
+  @extend .button--warning;
+
+  margin-right: .5em;
+}
+
+.edit-user--image-button-add {
+  @extend .button--neutral;
+}
+
+/* Login */
+
+.user-profile--login-text {
+  margin-bottom: 1em;
+}
+
+.user-profile--login-link {
+  margin-bottom: 3em;
+}
+
+.user-profile--login-link a {
+  color: $white;
+  text-decoration: none;
+  text-shadow: none;
+}

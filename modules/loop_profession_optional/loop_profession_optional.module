@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Loop Profession Optional feature.
+ */
+
+include_once 'loop_profession_optional.features.inc';

@@ -1,0 +1,26 @@
+/**
+ *
+ * Tables
+ *
+ */
+
+
+table {
+  width: 100%;
+  margin-bottom: 1em;
+  th {
+    background-color: $gray-lightest;
+  }
+
+  th,
+  td {
+    padding: .5em;
+    text-align: left;
+
+    border: 1px solid $border-color;
+
+    &:empty {
+      border: none;
+    }
+  }
+}
